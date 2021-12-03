@@ -21,7 +21,7 @@ func main() {
 			continue
 		}
 
-		if v > ints[i - 3] {
+		if v > ints[i-3] {
 			c++
 		}
 	}
