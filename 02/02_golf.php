@@ -1,0 +1,1 @@
+<?="";foreach(file("i")as$r){$e=substr($r,-2);$r[0]=="f"?($h+=$e)+$d+=$e*$a:$a+=$r[0]<"u"?$e:-$e;}?><?=$h*$d;
