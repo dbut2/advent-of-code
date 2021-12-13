@@ -1,0 +1,1 @@
+<?=$f=file_get_contents("i");$z=explode("\n\n",$f);$l=explode("\n",$z[0]);$d=explode("=",explode("\n",$z[1])[0]);foreach($l as$i){$q=explode(",",$i);$x=$q[0];$y=$q[1];$m=$d[1];$a=$d[0][-1];$$a=$$a>$m?$m*2-$$a:($$a==$m?-1:$$a);$c[$y][$x]=1;}foreach($c as$j){$t+=count($j);}?><?=$t;

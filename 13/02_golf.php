@@ -1,0 +1,1 @@
+<?=$f=file_get_contents("i");preg_match_all("/(\d*),(\d*)/",$f,$l);$s=fn($l)=>preg_match_all("/".$l."=(\d*)(?!(.|\n)*".$l.")/",$f,$o)-1+$o[1][0];$x=$s("x");$y=$s("y");$a=2*$x+2;$b=2*$y+2;$u=array_fill(0,$y,str_repeat(" ",$x));for($z=0;++$z<count($l[0]);){$i=$l[1][$z]%$a;$j=$l[2][$z]%$b;$u[$j>$y?$b-$j-2:$j][$i>$x?$a-$i-2:$i]="0";}foreach($u as$l){echo"\n".$l;}
