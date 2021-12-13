@@ -12,7 +12,7 @@ var input string
 func main() {
 	s := strings.Split(input, "\n")
 	i := solve(s)
-	fmt.Println(i, "done")
+	fmt.Println(i)
 }
 
 func solve(s []string) int {
@@ -31,8 +31,6 @@ func filter(max bool, bit int, s []string) []string {
 	}
 
 	common, equal := mostCommonNthDigit(s, bit)
-
-	fmt.Println(s)
 
 	var r []string
 
@@ -54,8 +52,6 @@ func filter(max bool, bit int, s []string) []string {
 			}
 		}
 	}
-
-	fmt.Println(r)
 
 	return filter(max, bit+1, r)
 }

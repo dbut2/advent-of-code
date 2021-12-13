@@ -49,8 +49,5 @@ func solve(s []string) int {
 		epsilon *= 2
 	}
 
-	101100100001 // 2849
-	010011011110 // 1246
-
 	return gamma * epsilon
 }
