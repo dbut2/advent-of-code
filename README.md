@@ -1,2 +1,6 @@
 # aoc
- Advent Of Code
+### Advent Of Code
+
+---
+
+<!--- advent_readme_stars table --->
