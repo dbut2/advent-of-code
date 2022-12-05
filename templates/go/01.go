@@ -11,10 +11,20 @@ import (
 //go:embed input.txt
 var input string
 
+//go:embed test.txt
+var test string
+
 func main() {
-	s := strings.Split(input, "\n")
-	i := solve(s)
-	fmt.Println(i)
+	fmt.Println("Test")
+	fmt.Println(do(test))
+	fmt.Println()
+	fmt.Println("Solution")
+	fmt.Println(do(input))
+}
+
+func do(s string) int {
+	strs := strings.Split(s, "\n")
+	return solve(strs)
 }
 
 func solve(s []string) int {
