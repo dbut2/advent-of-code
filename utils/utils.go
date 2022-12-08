@@ -86,6 +86,24 @@ func Sum(s []int) int {
 	return t
 }
 
+func SumMap[T comparable](s map[T]int) int {
+	t := 0
+	for _, i := range s {
+		t += i
+	}
+	return t
+}
+
+func SumMapIf[T comparable](s map[T]int, predicate func(T) bool) int {
+	t := 0
+	for k, v := range s {
+		if predicate(k) {
+			t += v
+		}
+	}
+	return t
+}
+
 func Sti(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
@@ -120,4 +138,34 @@ func Range(a, b int) []int {
 		l = append(l, i)
 	}
 	return l
+}
+
+func Map[T, U any](s []T, f func(T) U) []U {
+	var l []U
+	for _, v := range s {
+		l = append(l, f(v))
+	}
+	return l
+}
+
+func MapMap[T, U any, V, W comparable](s map[V]T, f func(V, T) (W, U)) map[W]U {
+	l := make(map[W]U)
+	for k, v := range s {
+		nk, nv := f(k, v)
+		l[nk] = nv
+	}
+	return l
+}
+
+func MapToSlice[T comparable, U any](s map[T]U) []Pair[T, U] {
+	var l []Pair[T, U]
+	for k, v := range s {
+		l = append(l, Pair[T, U]{A: k, B: v})
+	}
+	return l
+}
+
+type Pair[T, U any] struct {
+	A T
+	B U
 }
