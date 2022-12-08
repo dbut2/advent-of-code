@@ -3,6 +3,7 @@ package utils
 import (
 	"sort"
 	"strconv"
+	"strings"
 )
 
 func Order(s []int, desc bool) []int {
@@ -120,6 +121,14 @@ func Stis(s []string) []int {
 	return i
 }
 
+func Stiss(s []string) [][]int {
+	var i [][]int
+	for _, line := range s {
+		i = append(i, Stis(strings.Split(line, "")))
+	}
+	return i
+}
+
 func Intersection[T comparable](a, b []T) []T {
 	var i []T
 	for _, x := range a {
@@ -168,4 +177,16 @@ func MapToSlice[T comparable, U any](s map[T]U) []Pair[T, U] {
 type Pair[T, U any] struct {
 	A T
 	B U
+}
+
+func Fill2D[T comparable](x, y int, def T) [][]T {
+	var a [][]T
+	for i := 0; i < x; i++ {
+		var b []T
+		for j := 0; j < y; j++ {
+			b = append(b, def)
+		}
+		a = append(a, b)
+	}
+	return a
 }

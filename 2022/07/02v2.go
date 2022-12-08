@@ -51,7 +51,6 @@ func solve(s []string) int {
 				}
 			}
 		case "dir":
-			dirs.Add(curr + "/" + args[1])
 		default:
 			files[curr+"/"+args[1]] = utils.Sti(args[0])
 		}
