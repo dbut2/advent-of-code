@@ -6,8 +6,6 @@
 ![](https://img.shields.io/badge/dynamic/json?label=2021&query=2021&url=https://adventofcode-badge-dbut2.vercel.app/api)
 ![](https://img.shields.io/badge/dynamic/json?label=2020&query=2020&url=https://adventofcode-badge-dbut2.vercel.app/api)
 
-https://adventofcode-badge-dbut2.vercel.app/
-
 ---
 
 <!--- advent_readme_stars table --->
