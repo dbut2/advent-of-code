@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+func ParseInput(s string) []string {
+	return strings.Split(s, "\n")
+}
+
 func Order(s []int, desc bool) []int {
 	t := s
 	sort.Ints(t)
@@ -189,4 +193,21 @@ func Fill2D[T comparable](x, y int, def T) [][]T {
 		a = append(a, b)
 	}
 	return a
+}
+
+func Abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+
+func Sign(a int) int {
+	if a < 0 {
+		return -1
+	}
+	if a > 0 {
+		return 1
+	}
+	return 0
 }
