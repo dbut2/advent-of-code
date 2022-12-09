@@ -16,22 +16,6 @@ jobs:
           leaderboardId: 1573050
           sessionCookie: ${{ secrets.AOC_SESSION }}
 
-      - uses: k2bd/advent-readme-stars@v1
-        with:
-          userId: 1573050
-          leaderboardId: 1573050
-          sessionCookie: ${{ secrets.AOC_SESSION }}
-          tableMarker: "<!--- advent_readme_stars_2021 table --->"
-          year: 2021
-
-      - uses: k2bd/advent-readme-stars@v1
-        with:
-          userId: 1573050
-          leaderboardId: 1573050
-          sessionCookie: ${{ secrets.AOC_SESSION }}
-          tableMarker: "<!--- advent_readme_stars_2020 table --->"
-          year: 2020
-
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update README stars
