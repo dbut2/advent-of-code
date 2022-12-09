@@ -6,19 +6,24 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
+//go:embed test1.txt
+var test string
+
 func main() {
-	input = strings.ReplaceAll(input, "\n", "+")
-	s := strings.Split(input, "++")
-	i := solve(s)
-	fmt.Println(i)
+	utils.Test(solve(test), 45000)
+	fmt.Println(solve(input))
 }
 
-func solve(s []string) int {
+func solve(input string) int {
+	input = strings.ReplaceAll(input, "\n", "+")
+	s := strings.Split(input, "++")
 	ints := []int{}
 
 	for _, str := range s {

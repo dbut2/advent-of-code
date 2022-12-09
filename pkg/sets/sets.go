@@ -1,4 +1,4 @@
-package utils
+package sets
 
 type Set[T comparable] map[T]bool
 
@@ -7,9 +7,9 @@ func SetOf[T comparable](s ...T) Set[T] {
 }
 
 func SetFrom[T comparable](s []T) Set[T] {
-	var set Set[T]
+	set := make(Set[T])
 	for _, v := range s {
-		set[v] = true
+		set.Add(v)
 	}
 	return set
 }

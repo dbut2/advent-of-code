@@ -6,31 +6,27 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/math"
+	"github.com/dbut2/advent-of-code/pkg/sets"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 24933642)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) int {
+func solve(input string) int {
+	s := utils.ParseInput(input)
 	curr := ""
-	var dirs utils.Set[string]
+	var dirs sets.Set[string]
 	files := make(map[string]int)
 	for _, line := range s {
 		if line == "$ cd /" {
@@ -52,14 +48,14 @@ func solve(s []string) int {
 			}
 		case "dir":
 		default:
-			files[curr+"/"+args[1]] = utils.Sti(args[0])
+			files[curr+"/"+args[1]] = sti.Sti(args[0])
 		}
 	}
 	ma := -1
-	used := utils.SumMap(files)
-	needToDelete := utils.Sti("30000000") - (utils.Sti("70000000") - used)
+	used := math.SumMap(files)
+	needToDelete := sti.Sti("30000000") - (sti.Sti("70000000") - used)
 	for _, dir := range dirs.Slice() {
-		dirsize := utils.SumMapIf(files, func(file string) bool {
+		dirsize := math.SumMapIf(files, func(file string) bool {
 			match, _ := regexp.MatchString(dir+"/.*", file)
 			return match
 		})

@@ -3,32 +3,27 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/math"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 8)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
+func solve(input string) int {
+	s := utils.ParseInput(input)
 
-func solve(s []string) int {
-	arr := utils.Stiss(s)
+	arr := sti.Stiss(s)
 	max := 0
 	for i, row := range arr {
 		for j, tree := range row {
@@ -62,7 +57,7 @@ func solve(s []string) int {
 				}
 			}
 			val := up * right * down * left
-			max = utils.Max(max, val)
+			max = math.Max(max, val)
 		}
 	}
 	return max

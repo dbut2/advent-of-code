@@ -5,29 +5,23 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 95437)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(strings.Trim(s, "$ "), "\n$ ")
-	return solve(strs)
-}
-
-func solve(s []string) int {
+func solve(input string) int {
+	s := strings.Split(strings.Trim(input, "$ "), "\n$ ")
 	root := &Tree{
 		Name: "/",
 	}
@@ -51,7 +45,7 @@ func solve(s []string) int {
 				size := 0
 				ft := Dir
 				if line[0] != "dir" {
-					size = utils.Sti(line[0])
+					size = sti.Sti(line[0])
 					ft = File
 				}
 

@@ -157,7 +157,7 @@ func (s *ssd) correct() {
 		}
 	}
 
-	// g in 9 not 4 not set
+	// g in 9 not 4 not sets
 	for _, char := range strs[9] {
 		if !strings.ContainsRune(strs[4], char) {
 			if s.correction[char] == 0 {
@@ -166,7 +166,7 @@ func (s *ssd) correct() {
 		}
 	}
 
-	// d in 8 not set
+	// d in 8 not sets
 	for _, char := range strs[8] {
 		if s.correction[char] == 0 {
 			s.correction[char] = 4

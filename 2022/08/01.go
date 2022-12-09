@@ -3,36 +3,32 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/lists"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 21)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
+func solve(input string) int {
+	s := utils.ParseInput(input)
+	arr := sti.Stiss(s)
 
-func solve(s []string) int {
-	arr := utils.Stiss(s)
-
-	visible := utils.Fill2D(len(arr), len(arr[0]), false)
+	visible := lists.Fill2D(len(arr), len(arr[0]), false)
 
 	for i := 0; i < len(arr); i++ {
+		// Scan each column downwards and check each tree against the biggest we've seen so far, if the tree is the
+		// biggest for the column at that point we know it's visible from outside
 		max := -1
 		for j := 0; j < len(arr[0]); j++ {
 			if arr[i][j] > max {
@@ -43,6 +39,7 @@ func solve(s []string) int {
 	}
 
 	for i := 0; i < len(arr); i++ {
+		// Scan each column updwards
 		max := -1
 		for j := len(arr[0]) - 1; j >= 0; j-- {
 			if arr[i][j] > max {
@@ -53,6 +50,7 @@ func solve(s []string) int {
 	}
 
 	for j := 0; j < len(arr[0]); j++ {
+		// Scan each row to the right
 		max := -1
 		for i := 0; i < len(arr); i++ {
 			if arr[i][j] > max {
@@ -63,6 +61,7 @@ func solve(s []string) int {
 	}
 
 	for j := 0; j < len(arr[0]); j++ {
+		// Scan each row to the left
 		max := -1
 		for i := len(arr) - 1; i >= 0; i-- {
 			if arr[i][j] > max {

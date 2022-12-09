@@ -5,29 +5,23 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), "MCD")
+	fmt.Println(solve(input))
 }
 
-func do(s string) string {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) string {
+func solve(input string) string {
+	s := utils.ParseInput(input)
 
 	var stacks = make(map[int]string)
 
@@ -60,9 +54,9 @@ func solve(s []string) string {
 
 		rule := strings.Split(s[i], " ")
 
-		count := utils.Sti(rule[1])
-		from := utils.Sti(rule[3])
-		to := utils.Sti(rule[5])
+		count := sti.Sti(rule[1])
+		from := sti.Sti(rule[3])
+		to := sti.Sti(rule[5])
 
 		removed, char := pop(stacks[from], count)
 		stacks[from] = removed

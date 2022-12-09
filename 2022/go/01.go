@@ -3,30 +3,23 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"sort"
-	"strconv"
 	"strings"
+
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 0)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) int {
+func solve(input string) int {
+	s := strings.Split(input, "\n")
 
 }

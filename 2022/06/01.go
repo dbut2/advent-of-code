@@ -4,28 +4,23 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
+
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 7)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) int {
+func solve(input string) int {
+	s := utils.ParseInput(input)
 	str := s[0]
 
 	for i := 0; i < len(str)-4; i++ {

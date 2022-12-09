@@ -5,29 +5,23 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test.txt
+//go:embed test1.txt
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 95437)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) int {
+func solve(input string) int {
+	s := utils.ParseInput(input)
 	curr := ""
 	dirs := map[string]bool{"": true}
 	files := make(map[string]int)
@@ -52,7 +46,7 @@ func solve(s []string) int {
 		case "dir":
 			dirs[curr+"/"+args[1]] = true
 		default:
-			files[curr+"/"+args[1]] = utils.Sti(args[0])
+			files[curr+"/"+args[1]] = sti.Sti(args[0])
 		}
 	}
 	total := 0

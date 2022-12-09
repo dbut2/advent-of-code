@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/math"
+	"github.com/dbut2/advent-of-code/pkg/sets"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
@@ -15,21 +18,13 @@ var input string
 var test string
 
 func main() {
-	fmt.Println("Test")
-	fmt.Println(do(test))
-	fmt.Println()
-	fmt.Println("Solution")
-	fmt.Println(do(input))
+	utils.Test(solve(test), 13)
+	fmt.Println(solve(input))
 }
 
-func do(s string) int {
-	strs := strings.Split(s, "\n")
-	return solve(strs)
-}
-
-func solve(s []string) int {
-
-	visits := utils.Set[string]{}
+func solve(input string) int {
+	s := utils.ParseInput(input)
+	visits := sets.Set[string]{}
 
 	hx, hy := 0, 0
 	tx, ty := 0, 0
@@ -39,7 +34,7 @@ func solve(s []string) int {
 	for _, line := range s {
 		m := strings.Split(line, " ")
 		dir := m[0]
-		amt := utils.Sti(m[1])
+		amt := sti.Sti(m[1])
 
 		for i := 0; i < amt; i++ {
 			switch dir {
@@ -53,12 +48,12 @@ func solve(s []string) int {
 				hy++
 			}
 
-			if utils.Abs(hx-tx) <= 1 && utils.Abs(hy-ty) <= 1 {
+			if math.Abs(hx-tx) <= 1 && math.Abs(hy-ty) <= 1 {
 				continue
 			}
 
-			tx += utils.Sign(hx - tx)
-			ty += utils.Sign(hy - ty)
+			tx += math.Sign(hx - tx)
+			ty += math.Sign(hy - ty)
 
 			visits.Add(fmt.Sprintf("%d,%d", tx, ty))
 		}

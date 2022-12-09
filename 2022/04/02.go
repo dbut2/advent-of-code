@@ -4,30 +4,31 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
-	"time"
 
-	"github.com/dbut2/advent-of-code/utils"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
+//go:embed test1.txt
+var test string
+
 func main() {
-	start := time.Now()
-	s := strings.Split(input, "\n")
-	i := solve(s)
-	fmt.Println(i)
-	fmt.Println(time.Now().Sub(start))
+	utils.Test(solve(test), 4)
+	fmt.Println(solve(input))
 }
 
-func solve(s []string) int {
+func solve(input string) int {
+	s := utils.ParseInput(input)
 	overlap := 0
 
 	for _, str := range s {
 		elves := strings.Split(str, ",")
 
-		e1 := utils.Stis(strings.Split(elves[0], "-"))
-		e2 := utils.Stis(strings.Split(elves[1], "-"))
+		e1 := sti.Stis(strings.Split(elves[0], "-"))
+		e2 := sti.Stis(strings.Split(elves[1], "-"))
 
 		e1s, e1e := e1[0], e1[1]
 		e2s, e2e := e2[0], e2[1]
