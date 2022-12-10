@@ -50,7 +50,15 @@ type Pair[T, U any] struct {
 	B U
 }
 
-func Fill2D[T comparable](x, y int, def T) [][]T {
+func Fill[T any](x int, def T) []T {
+	var a []T
+	for i := 0; i < x; i++ {
+		a = append(a, def)
+	}
+	return a
+}
+
+func Fill2D[T any](x, y int, def T) [][]T {
 	var a [][]T
 	for i := 0; i < x; i++ {
 		var b []T

@@ -59,7 +59,7 @@ func LargestN(s []int, n int) []int {
 	return Order(s, true)[:n]
 }
 
-func largest(s []int) int {
+func Largest(s []int) int {
 	return LargestN(s, 1)[0]
 }
 

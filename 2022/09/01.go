@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	_ "embed"
 	"fmt"
 	"strings"
@@ -8,28 +9,30 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sets"
 	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test1.txt
-var test string
+//go:embed test*.txt
+var tests embed.FS
 
 func main() {
-	utils.Test(solve(test), 13)
+	t := test.Register(tests, solve)
+	t.Expected(1, 13)
 	fmt.Println(solve(input))
 }
 
 func solve(input string) int {
 	s := utils.ParseInput(input)
-	visits := sets.Set[string]{}
+	visits := sets.Set[[2]int]{}
 
 	hx, hy := 0, 0
 	tx, ty := 0, 0
 
-	visits.Add(fmt.Sprintf("%d,%d", tx, ty))
+	visits.Add([2]int{tx, ty})
 
 	for _, line := range s {
 		m := strings.Split(line, " ")
@@ -55,7 +58,7 @@ func solve(input string) int {
 			tx += math.Sign(hx - tx)
 			ty += math.Sign(hy - ty)
 
-			visits.Add(fmt.Sprintf("%d,%d", tx, ty))
+			visits.Add([2]int{tx, ty})
 		}
 	}
 

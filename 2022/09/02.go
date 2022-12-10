@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	_ "embed"
 	"fmt"
 	"strings"
@@ -9,27 +10,29 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sets"
 	"github.com/dbut2/advent-of-code/pkg/sti"
+	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
 var input string
 
-//go:embed test2.txt
-var test string
+//go:embed test*.txt
+var tests embed.FS
 
 func main() {
-	utils.Test(solve(test), 36)
+	t := test.Register(tests, solve)
+	t.Expected(2, 36)
 	fmt.Println(solve(input))
 }
 
 func solve(input string) int {
 	s := utils.ParseInput(input)
-	visits := sets.Set[string]{}
+	visits := sets.Set[[2]int]{}
 
 	knots := lists.Fill2D(10, 2, 0)
 
-	visits.Add(fmt.Sprintf("%d,%d", knots[len(knots)-1][0], knots[len(knots)-1][1]))
+	visits.Add([2]int{knots[len(knots)-1][0], knots[len(knots)-1][1]})
 
 	for _, line := range s {
 		m := strings.Split(line, " ")
@@ -57,7 +60,7 @@ func solve(input string) int {
 				knots[j][1] += math.Sign(knots[j-1][1] - knots[j][1])
 			}
 
-			visits.Add(fmt.Sprintf("%d,%d", knots[len(knots)-1][0], knots[len(knots)-1][1]))
+			visits.Add([2]int{knots[len(knots)-1][0], knots[len(knots)-1][1]})
 		}
 	}
 
