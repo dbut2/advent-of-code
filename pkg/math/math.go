@@ -119,3 +119,11 @@ func SumMapIf[T comparable](s map[T]int, predicate func(T) bool) int {
 	}
 	return t
 }
+
+func Pow(x, y int) int {
+	val := 1
+	for i := 0; i < y; i++ {
+		val *= x
+	}
+	return val
+}

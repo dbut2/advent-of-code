@@ -18,7 +18,6 @@ var tests embed.FS
 
 func main() {
 	t := test.Register(tests, solve)
-	_ = t
 	t.Expected(1, 13140)
 	fmt.Println(solve(input))
 }
@@ -54,13 +53,14 @@ func solve(input string) int {
 			}
 
 		case "addx":
-			cycle += 2
-			x += amt
+			cycle++
 			if isin(checkCycles, cycle) {
 				signal += cycle * x
 			}
-			if isin(checkCycles, cycle-1) {
-				signal += (cycle - 1) * (x - amt)
+			cycle++
+			x += amt
+			if isin(checkCycles, cycle) {
+				signal += cycle * x
 			}
 		}
 

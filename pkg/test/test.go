@@ -18,12 +18,11 @@ func Register[T comparable](fs embed.FS, f func(string) T) Tester[T] {
 }
 
 func (t Tester[T]) Expected(n int, expected T) {
-	file, err := t.fs.ReadFile(fmt.Sprintf("test%d.txt", n))
+	input, err := t.fs.ReadFile(fmt.Sprintf("test%d.txt", n))
 	if err != nil {
 		panic(err.Error())
 	}
-	input := string(file)
-	out := t.solver(input)
+	out := t.solver(string(input))
 	if out != expected {
 		panic(fmt.Sprintf("test failed!\nexpected: %v\ngot: %v\n", expected, out))
 	}

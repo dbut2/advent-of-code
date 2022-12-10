@@ -76,3 +76,12 @@ func Reverse[T any](s []T) []T {
 	}
 	return s
 }
+
+func Contains[T comparable](s []T, i T) bool {
+	for _, item := range s {
+		if item == i {
+			return true
+		}
+	}
+	return false
+}
