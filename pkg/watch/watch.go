@@ -1,4 +1,4 @@
-package watcher
+package watch
 
 import (
 	"fmt"
@@ -23,4 +23,18 @@ func Watch[T any](tick time.Duration) *Watcher[T] {
 
 func (w *Watcher[T]) Update(v T) {
 	w.val = v
+}
+
+func Incrementer(tick time.Duration) func() {
+	w := Watch[int](tick)
+	return func() {
+		w.val++
+	}
+}
+
+func Occurrence(tick time.Duration) func() {
+	w := Watch[time.Time](tick)
+	return func() {
+		w.val = time.Now()
+	}
 }

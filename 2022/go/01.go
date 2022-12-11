@@ -4,9 +4,9 @@ import (
 	"embed"
 	_ "embed"
 	"fmt"
-	"strings"
 
 	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 //go:embed input.txt
@@ -17,11 +17,11 @@ var tests embed.FS
 
 func main() {
 	t := test.Register(tests, solve)
-	t.Expected(1, 0)
+	t.Expect(1, 0)
 	fmt.Println(solve(input))
 }
 
 func solve(input string) int {
-	s := strings.Split(input, "\n")
+	s := utils.ParseInput(input)
 
 }

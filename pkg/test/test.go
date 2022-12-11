@@ -17,7 +17,7 @@ func Register[T comparable](fs embed.FS, f func(string) T) Tester[T] {
 	}
 }
 
-func (t Tester[T]) Expected(n int, expected T) {
+func (t Tester[T]) Expect(n int, expected T) {
 	input, err := t.fs.ReadFile(fmt.Sprintf("test%d.txt", n))
 	if err != nil {
 		panic(err.Error())

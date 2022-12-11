@@ -18,7 +18,7 @@ var tests embed.FS
 
 func main() {
 	t := test.Register(tests, solve)
-	t.Expected(1, 13140)
+	t.Expect(1, 13140)
 	fmt.Println(solve(input))
 }
 
