@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/dbut2/advent-of-code/pkg/test"
-	"github.com/dbut2/advent-of-code/pkg/timer"
 )
 
 //go:embed input.txt
@@ -17,8 +16,6 @@ var input string
 var tests embed.FS
 
 func main() {
-	stop := timer.Start()
-	defer stop()
 	t := test.Register(tests, solve)
 	t.Expect(1, 29)
 	fmt.Println(solve(input))

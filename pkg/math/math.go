@@ -35,9 +35,11 @@ func Sign(a int) int {
 	return 0
 }
 
-func Order(s []int, desc bool) []int {
+func Order[T number](s []T, desc bool) []T {
 	t := s
-	sort.Ints(t)
+	sort.Slice(t, func(i, j int) bool {
+		return t[i] < t[j]
+	})
 	if desc {
 		t = Reverse(t)
 	}
@@ -94,8 +96,12 @@ func Reverse[T any](s []T) []T {
 	return s
 }
 
-func Sum(s []int) int {
-	t := 0
+type number interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64
+}
+
+func Sum[T number](s []T) T {
+	var t T
 	for _, i := range s {
 		t += i
 	}
