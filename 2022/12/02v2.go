@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/dbut2/advent-of-code/pkg/test"
-	"github.com/dbut2/advent-of-code/pkg/timer"
 )
 
 //go:embed input.txt
@@ -18,7 +17,6 @@ var input string
 var tests embed.FS
 
 func main() {
-	defer timer.Start()()
 	t := test.Register(tests, solve)
 	t.Expect(1, 29)
 	fmt.Println(solve(input))
@@ -40,6 +38,7 @@ func solve(input string) int {
 	wg := &sync.WaitGroup{}
 	go process(wg, c)
 
+	// fill each cell with data and identify possible starts and end cells
 	var starts []*Cell
 	var end *Cell
 	for i, line := range s {
@@ -62,6 +61,8 @@ func solve(input string) int {
 			}
 		}
 	}
+
+	// fill neighbors field for neighbors that can move into current cell
 	for i, row := range grid {
 		for j, cell := range row {
 			nCoords := [][]int{{i - 1, j}, {i + 1, j}, {i, j - 1}, {i, j + 1}}
@@ -69,7 +70,7 @@ func solve(input string) int {
 				if coord[0] >= 0 && coord[0] < len(grid) && coord[1] >= 0 && coord[1] < len(grid[coord[0]]) {
 					neighbor := grid[coord[0]][coord[1]]
 					if cell.val-neighbor.val <= 1 {
-						cell.Neighbours = append(cell.Neighbours, neighbor)
+						cell.Neighbors = append(cell.Neighbors, neighbor)
 					}
 				}
 			}
@@ -93,11 +94,12 @@ type Grid [][]*Cell
 
 type Cell struct {
 	val        int
-	Neighbours []*Cell
+	Neighbors  []*Cell
 	MinToEnd   int
 	Processing bool
 }
 
+// send cell to chan, manages wg and cell.Processing for efficiency
 func send(wg *sync.WaitGroup, c chan *Cell, cell *Cell) {
 	if cell.Processing {
 		return
@@ -107,6 +109,7 @@ func send(wg *sync.WaitGroup, c chan *Cell, cell *Cell) {
 	go func() { c <- cell }()
 }
 
+// process will listen on channel and process any cells it sees
 func process(wg *sync.WaitGroup, c chan *Cell) {
 	for {
 		cell := <-c
@@ -118,18 +121,17 @@ func process(wg *sync.WaitGroup, c chan *Cell) {
 	}
 }
 
+// processCell will check if any of the neighboring cells can be improved
+// any improvements will recursively be checked for each of their neighbors
 func processCell(cell *Cell) []*Cell {
 	cell.Processing = false
-	changed := false
-	for _, n := range cell.Neighbours {
+	var ns []*Cell
+	for _, n := range cell.Neighbors {
 		nm := cell.MinToEnd + 1
 		if nm < n.MinToEnd || n.MinToEnd < 0 {
 			n.MinToEnd = nm
-			changed = true
+			ns = append(ns, n)
 		}
 	}
-	if changed {
-		return cell.Neighbours
-	}
-	return nil
+	return ns
 }
