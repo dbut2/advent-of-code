@@ -24,104 +24,130 @@ func main() {
 
 func solve(input string) int {
 	s := strings.Split(input, "\n")
-	grid := Grid{}
 
+	grid := Grid{}
 	for i := range s {
-		var line []*Cell
+		line := Line{}
 		for range s[i] {
 			line = append(line, &Cell{})
 		}
 		grid = append(grid, line)
 	}
 
+	rows := len(grid)
+	cols := len(grid[0])
+
+	// fill each cell with data and identify possible starts and end cells
 	var start *Cell
-
-	c := make(chan *Cell)
-	wg := &sync.WaitGroup{}
-
+	var end *Cell
 	for i, line := range s {
-		for j, cell := range line {
-			grid[i][j].MinToEnd = -1
-			grid[i][j].Processing = false
-			grid[i][j].val = int(cell)
+		for j, rawCell := range line {
+			cell := grid[i][j]
 
-			if string(cell) == "S" {
-				start = grid[i][j]
-				grid[i][j].val = 97
+			if rawCell == 83 {
+				start = cell
+				rawCell = 97
+				s[i] = s[i][:j] + "a" + s[i][j+1:]
 			}
-			if string(cell) == "E" {
-				grid[i][j].MinToEnd = 0
-				grid[i][j].val = 122
-				send(wg, c, grid[i][j])
+			if rawCell == 69 {
+				cell.MinToEnd = 0
+				cell.Seen = true
+				end = cell
+				s[i] = s[i][:j] + "z" + s[i][j+1:]
+				rawCell = 122
 			}
 		}
 	}
 
+	// fill neighbors field for neighbors that can move into current cell
 	for i, row := range grid {
 		for j, cell := range row {
-			nCoords := [][]int{{i - 1, j}, {i + 1, j}, {i, j - 1}, {i, j + 1}}
-			for _, coord := range nCoords {
-				if coord[0] >= 0 && coord[0] < len(grid) && coord[1] >= 0 && coord[1] < len(grid[coord[0]]) {
-					neighbor := grid[coord[0]][coord[1]]
-					if cell.val-neighbor.val <= 1 {
-						cell.Neighbours = append(cell.Neighbours, neighbor)
-					}
+			cval := s[i][j]
+
+			if i > 0 {
+				neighbor := grid[i-1][j]
+				nval := s[i-1][j]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[0] = neighbor
+				}
+			}
+			if i < rows-1 {
+				neighbor := grid[i+1][j]
+				nval := s[i+1][j]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[1] = neighbor
+				}
+			}
+			if j > 0 {
+				neighbor := grid[i][j-1]
+				nval := s[i][j-1]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[2] = neighbor
+				}
+			}
+			if j < cols-1 {
+				neighbor := grid[i][j+1]
+				nval := s[i][j+1]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[3] = neighbor
 				}
 			}
 		}
 	}
 
-	process(wg, c)
+	wg := &sync.WaitGroup{}
+	send(wg, end)
+	wg.Wait()
+
 	return start.MinToEnd
 }
 
-type Grid [][]*Cell
+type Grid []Line
+type Line []*Cell
 
 type Cell struct {
-	val        int
-	Neighbours []*Cell
+	Neighbors  [4]*Cell
 	MinToEnd   int
+	Seen       bool
 	Processing bool
 }
 
-func send(wg *sync.WaitGroup, c chan *Cell, cell *Cell) {
+// send cell to chan, manages wg and cell.Processing for efficiency
+func send(wg *sync.WaitGroup, cell *Cell) {
+	if cell.Processing {
+		return
+	}
+	cell.Processing = true
 	wg.Add(1)
-	go func() {
-		if cell.Processing {
-			wg.Done()
-			return
-		}
-		cell.Processing = true
-		c <- cell
-	}()
+	go process(wg, cell)
 }
 
-func process(wg *sync.WaitGroup, c chan *Cell) {
-	done := make(chan bool)
-	go func() {
-		wg.Wait()
-		done <- true
-	}()
-	for loop := true; loop; {
-		select {
-		case cell := <-c:
-			cell.Processing = false
-			changed := false
-			for _, n := range cell.Neighbours {
-				nm := cell.MinToEnd + 1
-				if nm < n.MinToEnd || n.MinToEnd < 0 {
-					n.MinToEnd = nm
-					changed = true
-				}
-			}
-			if changed {
-				for _, n := range cell.Neighbours {
-					send(wg, c, n)
-				}
-			}
-			wg.Done()
-		case <-done:
-			loop = false
+// process will listen on channel and process any cells it sees
+func process(wg *sync.WaitGroup, cell *Cell) {
+	cell.Processing = false
+	for _, n := range cell.Neighbors {
+		if n == nil {
+			continue
+		}
+		nm := cell.MinToEnd + 1
+		if !n.Seen {
+			n.MinToEnd = nm
+			n.Seen = true
+			send(wg, n)
+			continue
+		}
+		if nm < n.MinToEnd {
+			n.MinToEnd = nm
+			send(wg, n)
 		}
 	}
+	wg.Done()
 }

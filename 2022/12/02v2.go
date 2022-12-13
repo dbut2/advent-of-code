@@ -24,39 +24,39 @@ func main() {
 
 func solve(input string) int {
 	s := strings.Split(input, "\n")
-	grid := Grid{}
 
+	grid := Grid{}
 	for i := range s {
-		var line []*Cell
+		line := Line{}
 		for range s[i] {
 			line = append(line, &Cell{})
 		}
 		grid = append(grid, line)
 	}
 
-	c := make(chan *Cell)
-	wg := &sync.WaitGroup{}
-	go process(wg, c)
+	rows := len(grid)
+	cols := len(grid[0])
 
 	// fill each cell with data and identify possible starts and end cells
 	var starts []*Cell
 	var end *Cell
 	for i, line := range s {
-		for j, cell := range line {
-			grid[i][j].MinToEnd = -1
-			grid[i][j].Processing = false
-			grid[i][j].val = int(cell)
+		for j, rawCell := range line {
+			cell := grid[i][j]
 
-			if string(cell) == "S" {
-				grid[i][j].val = 97
+			if rawCell == 83 {
+				rawCell = 97
+				s[i] = s[i][:j] + "a" + s[i][j+1:]
 			}
-			if string(cell) == "E" {
-				grid[i][j].MinToEnd = 0
-				grid[i][j].val = 122
-				end = grid[i][j]
+			if rawCell == 69 {
+				cell.MinToEnd = 0
+				cell.Seen = true
+				end = cell
+				s[i] = s[i][:j] + "z" + s[i][j+1:]
+				rawCell = 122
 			}
 
-			if grid[i][j].val == 97 {
+			if rawCell == 97 {
 				starts = append(starts, grid[i][j])
 			}
 		}
@@ -65,73 +65,102 @@ func solve(input string) int {
 	// fill neighbors field for neighbors that can move into current cell
 	for i, row := range grid {
 		for j, cell := range row {
-			nCoords := [][]int{{i - 1, j}, {i + 1, j}, {i, j - 1}, {i, j + 1}}
-			for _, coord := range nCoords {
-				if coord[0] >= 0 && coord[0] < len(grid) && coord[1] >= 0 && coord[1] < len(grid[coord[0]]) {
-					neighbor := grid[coord[0]][coord[1]]
-					if cell.val-neighbor.val <= 1 {
-						cell.Neighbors = append(cell.Neighbors, neighbor)
-					}
+			cval := s[i][j]
+
+			if i > 0 {
+				neighbor := grid[i-1][j]
+				nval := s[i-1][j]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[0] = neighbor
+				}
+			}
+			if i < rows-1 {
+				neighbor := grid[i+1][j]
+				nval := s[i+1][j]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[1] = neighbor
+				}
+			}
+			if j > 0 {
+				neighbor := grid[i][j-1]
+				nval := s[i][j-1]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[2] = neighbor
+				}
+			}
+			if j < cols-1 {
+				neighbor := grid[i][j+1]
+				nval := s[i][j+1]
+
+				diff := cval - nval
+				if diff <= 1 || diff >= 128 {
+					cell.Neighbors[3] = neighbor
 				}
 			}
 		}
 	}
 
-	send(wg, c, end)
+	wg := &sync.WaitGroup{}
+	send(wg, end)
 	wg.Wait()
 
-	min := -1
+	min := 0
 	for _, start := range starts {
-		if min == -1 || start.MinToEnd < min && start.MinToEnd != -1 {
+		if start.MinToEnd == 0 {
+			continue
+		}
+		if min == 0 || start.MinToEnd < min {
 			min = start.MinToEnd
 		}
-
 	}
+
 	return min
 }
 
-type Grid [][]*Cell
+type Grid []Line
+type Line []*Cell
 
 type Cell struct {
-	val        int
-	Neighbors  []*Cell
+	Neighbors  [4]*Cell
 	MinToEnd   int
+	Seen       bool
 	Processing bool
 }
 
 // send cell to chan, manages wg and cell.Processing for efficiency
-func send(wg *sync.WaitGroup, c chan *Cell, cell *Cell) {
+func send(wg *sync.WaitGroup, cell *Cell) {
 	if cell.Processing {
 		return
 	}
-	wg.Add(1)
 	cell.Processing = true
-	go func() { c <- cell }()
+	wg.Add(1)
+	go process(wg, cell)
 }
 
 // process will listen on channel and process any cells it sees
-func process(wg *sync.WaitGroup, c chan *Cell) {
-	for {
-		cell := <-c
-		neighbours := processCell(cell)
-		for _, n := range neighbours {
-			send(wg, c, n)
-		}
-		wg.Done()
-	}
-}
-
-// processCell will check if any of the neighboring cells can be improved
-// any improvements will recursively be checked for each of their neighbors
-func processCell(cell *Cell) []*Cell {
+func process(wg *sync.WaitGroup, cell *Cell) {
 	cell.Processing = false
-	var ns []*Cell
 	for _, n := range cell.Neighbors {
+		if n == nil {
+			continue
+		}
 		nm := cell.MinToEnd + 1
-		if nm < n.MinToEnd || n.MinToEnd < 0 {
+		if !n.Seen {
 			n.MinToEnd = nm
-			ns = append(ns, n)
+			n.Seen = true
+			send(wg, n)
+			continue
+		}
+		if nm < n.MinToEnd {
+			n.MinToEnd = nm
+			send(wg, n)
 		}
 	}
-	return ns
+	wg.Done()
 }

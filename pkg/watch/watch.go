@@ -25,6 +25,10 @@ func (w *Watcher[T]) Update(v T) {
 	w.val = v
 }
 
+func (w *Watcher[T]) Val() T {
+	return w.val
+}
+
 func Incrementer(tick time.Duration) func() {
 	w := Watch[int](tick)
 	return func() {
