@@ -1,5 +1,9 @@
 package lists
 
+import (
+	"github.com/dbut2/advent-of-code/pkg/math"
+)
+
 func Intersection[T comparable](a, b []T) []T {
 	var i []T
 	for _, x := range a {
@@ -13,8 +17,11 @@ func Intersection[T comparable](a, b []T) []T {
 }
 
 func Range(a, b int) []int {
+	min := math.Min(a, b)
+	max := math.Max(a, b)
+
 	var l []int
-	for i := a; i <= b; i++ {
+	for i := min; i <= max; i++ {
 		l = append(l, i)
 	}
 	return l

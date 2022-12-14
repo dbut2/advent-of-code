@@ -12,5 +12,5 @@ func Test[T comparable](input, expected T) {
 }
 
 func ParseInput(s string) []string {
-	return strings.Split(s, "\n")
+	return strings.Split(strings.Trim(s, "\n"), "\n")
 }
