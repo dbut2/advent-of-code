@@ -37,3 +37,11 @@ func (s *Set[T]) Has(v T) bool {
 	_, ok := (*s)[v]
 	return ok
 }
+
+func (s *Set[T]) Copy() Set[T] {
+	var c Set[T]
+	for i := range *s {
+		c.Add(i)
+	}
+	return c
+}
