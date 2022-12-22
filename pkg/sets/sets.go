@@ -1,5 +1,9 @@
 package sets
 
+import (
+	"sync"
+)
+
 type Set[T comparable] map[T]bool
 
 func SetOf[T comparable](s ...T) Set[T] {
@@ -44,4 +48,43 @@ func (s *Set[T]) Copy() Set[T] {
 		c.Add(i)
 	}
 	return c
+}
+
+type SyncSet[T comparable] struct {
+	set Set[T]
+	l   sync.Locker
+}
+
+func (s *SyncSet[T]) Slice() []T {
+	s.ensureLocker()
+	s.l.Lock()
+	defer s.l.Unlock()
+	return s.set.Slice()
+}
+
+func (s *SyncSet[T]) Add(v T) {
+	s.ensureLocker()
+	s.l.Lock()
+	defer s.l.Unlock()
+	s.set.Add(v)
+}
+
+func (s *SyncSet[T]) Remove(v T) {
+	s.ensureLocker()
+	s.l.Lock()
+	defer s.l.Unlock()
+	s.set.Remove(v)
+}
+
+func (s *SyncSet[T]) Has(v T) bool {
+	s.ensureLocker()
+	s.l.Lock()
+	defer s.l.Unlock()
+	return s.set.Has(v)
+}
+
+func (s *SyncSet[T]) ensureLocker() {
+	if s.l == nil {
+		s.l = &sync.Mutex{}
+	}
 }
