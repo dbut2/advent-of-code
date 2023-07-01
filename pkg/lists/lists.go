@@ -16,11 +16,11 @@ func Intersection[T comparable](a, b []T) []T {
 	return i
 }
 
-func Range(a, b int) []int {
+func Range[N math.Number](a, b N) []N {
 	min := math.Min(a, b)
 	max := math.Max(a, b)
 
-	var l []int
+	var l []N
 	for i := min; i <= max; i++ {
 		l = append(l, i)
 	}
@@ -58,21 +58,21 @@ type Pair[T, U any] struct {
 }
 
 func Fill[T any](x int, def T) []T {
-	var a []T
+	a := make([]T, x)
 	for i := 0; i < x; i++ {
-		a = append(a, def)
+		a[x] = def
 	}
 	return a
 }
 
 func Fill2D[T any](x, y int, def T) [][]T {
-	var a [][]T
+	a := make([][]T, x)
 	for i := 0; i < x; i++ {
-		var b []T
+		b := make([]T, y)
 		for j := 0; j < y; j++ {
-			b = append(b, def)
+			b[j] = def
 		}
-		a = append(a, b)
+		a[i] = b
 	}
 	return a
 }

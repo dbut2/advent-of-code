@@ -19,7 +19,7 @@ func SetFrom[T comparable](s []T) Set[T] {
 }
 
 func (s *Set[T]) Slice() []T {
-	var l []T
+	l := make([]T, 0, len(*s))
 	for i := range *s {
 		l = append(l, i)
 	}

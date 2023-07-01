@@ -14,17 +14,17 @@ func Sti(s string) int {
 }
 
 func Stis(s []string) []int {
-	var i []int
-	for _, str := range s {
-		i = append(i, Sti(str))
+	ints := make([]int, len(s))
+	for i, str := range s {
+		ints[i] = Sti(str)
 	}
-	return i
+	return ints
 }
 
-func Stiss(s []string) [][]int {
-	var i [][]int
-	for _, line := range s {
-		i = append(i, Stis(strings.Split(line, "")))
+func Stiss(s []string, sep string) [][]int {
+	ints := make([][]int, len(s))
+	for i, line := range s {
+		ints[i] = Stis(strings.Split(line, sep))
 	}
-	return i
+	return ints
 }
