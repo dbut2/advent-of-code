@@ -25,7 +25,7 @@ func Abs[N Number](a N) N {
 	return a
 }
 
-func Sign[N SignedNumber](a N) N {
+func Sign[N Snumber](a N) N {
 	if a < 0 {
 		return -1
 	}
@@ -97,15 +97,39 @@ func Reverse[T any](s []T) []T {
 }
 
 type Number interface {
-	SignedNumber | UnsignedNumber
+	Sint | Uint | Float
 }
 
-type SignedNumber interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64
+type Snumber interface {
+	Sint | Float
 }
 
-type UnsignedNumber interface {
+type Int interface {
+	Sint | Uint
+}
+
+type Sint interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
+
+type Uint interface {
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
+}
+
+type Float interface {
+	~float32 | ~float64
+}
+
+type SizedInt interface {
+	SizedSint | SizedUint
+}
+
+type SizedSint interface {
+	~int8 | ~int16 | ~int32 | ~int64
+}
+
+type SizedUint interface {
+	~uint8 | ~uint16 | ~uint32 | ~uint64
 }
 
 func Sum[T Number](s []T) T {
@@ -134,10 +158,14 @@ func SumMapIf[T comparable](s map[T]int, predicate func(T) bool) int {
 	return t
 }
 
-func Pow[N Number](x, y N) N {
-	val := N(1)
-	for i := N(0); i < y; i++ {
-		val *= x
+func Pow[N Int, M Uint](x N, y M) N {
+	result := N(1)
+	for y > 0 {
+		if y&1 == 1 {
+			result *= x
+		}
+		y = y >> 1
+		x *= x
 	}
-	return val
+	return result
 }
