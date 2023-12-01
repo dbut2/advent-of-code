@@ -1,23 +1,5 @@
 package math
 
-import (
-	"sort"
-)
-
-func Max[N Number](a, b N) N {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func Min[N Number](a, b N) N {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func Abs[N Number](a N) N {
 	if a < 0 {
 		return -a
@@ -33,67 +15,6 @@ func Sign[N Snumber](a N) N {
 		return 1
 	}
 	return 0
-}
-
-func Order[T Number](s []T, desc bool) []T {
-	t := s
-	sort.Slice(t, func(i, j int) bool {
-		return t[i] < t[j]
-	})
-	if desc {
-		t = Reverse(t)
-	}
-	return t
-}
-
-func OrderMap[T any](s []T, f func(T) int, desc bool) []T {
-	t := s
-	sort.Slice(s, func(i, j int) bool {
-		return f(t[i]) < f(t[j])
-	})
-	if desc {
-		t = Reverse(t)
-	}
-	return t
-}
-
-func LargestN[N Number](s []N, n int) []N {
-	return Order(s, true)[:n]
-}
-
-func Largest[N Number](s []N) N {
-	return LargestN(s, 1)[0]
-}
-
-func LargestNMap[T any](s []T, f func(T) int, n int) []T {
-	return OrderMap(s, f, true)[:n]
-}
-
-func LargestMap[T any](s []T, f func(T) int) T {
-	return LargestNMap(s, f, 1)[0]
-}
-
-func SmallestN[N Number](s []N, n int) []N {
-	return Order(s, false)[:n]
-}
-
-func Smallest[N Number](s []N) N {
-	return SmallestN(s, 1)[0]
-}
-
-func SmallestNMap[T any](s []T, f func(T) int, n int) []T {
-	return OrderMap(s, f, false)[:n]
-}
-
-func SmallestMap[T any](s []T, f func(T) int) T {
-	return SmallestNMap(s, f, 1)[0]
-}
-
-func Reverse[T any](s []T) []T {
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		s[i], s[j] = s[j], s[i]
-	}
-	return s
 }
 
 type Number interface {
@@ -158,7 +79,11 @@ func SumMapIf[T comparable](s map[T]int, predicate func(T) bool) int {
 	return t
 }
 
-func Pow[N Int, M Uint](x N, y M) N {
+func Pow[N Number, M Int](x N, y M) N {
+	if y < 0 {
+		return 1 / Pow(x, -y)
+	}
+
 	result := N(1)
 	for y > 0 {
 		if y&1 == 1 {

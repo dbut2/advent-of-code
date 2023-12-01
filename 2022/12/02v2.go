@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/test"
 )
 
@@ -20,6 +22,9 @@ func main() {
 	t := test.Register(tests, solve)
 	t.Expect(1, 29)
 	fmt.Println(solve(input))
+	benchmark.Run(func() {
+		solve(input)
+	}, benchmark.Time(time.Second*10))
 }
 
 func solve(input string) int {

@@ -5,7 +5,9 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sets"
 	"github.com/dbut2/advent-of-code/pkg/sti"
@@ -24,6 +26,9 @@ func main() {
 	t.Expect(2, 10)
 	t.Expect(1, 58)
 	fmt.Println(solve(input))
+	benchmark.Run(func() {
+		solve(input)
+	}, benchmark.Time(time.Second*10))
 }
 
 func solve(input string) int {

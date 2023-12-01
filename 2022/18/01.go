@@ -5,7 +5,9 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/sets"
 	"github.com/dbut2/advent-of-code/pkg/sti"
 	"github.com/dbut2/advent-of-code/pkg/test"
@@ -22,6 +24,9 @@ func main() {
 	t := test.Register(tests, solve)
 	t.Expect(1, 64)
 	fmt.Println(solve(input))
+	benchmark.Run(func() {
+		solve(input)
+	}, benchmark.Time(time.Second*10))
 }
 
 func solve(input string) int {
@@ -36,24 +41,21 @@ func solve(input string) int {
 
 	total := 0
 
-	for _, c := range cubes.Slice() {
-		sides := [6][3]int{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1},
-			{-1, 0, 0},
-			{0, -1, 0},
-			{0, 0, -1},
-		}
+	sides := [6][3]int{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		{-1, 0, 0},
+		{0, -1, 0},
+		{0, 0, -1},
+	}
 
-		count := 6
+	for _, c := range cubes.Slice() {
 		for _, d := range sides {
-			x, y, z := c[0]+d[0], c[1]+d[1], c[2]+d[2]
-			if cubes.Has([3]int{x, y, z}) {
-				count--
+			if !cubes.Has([3]int{c[0] + d[0], c[1] + d[1], c[2] + d[2]}) {
+				total++
 			}
 		}
-		total += count
 	}
 
 	return total
