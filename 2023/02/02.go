@@ -4,6 +4,7 @@ import (
 	"embed"
 	_ "embed"
 	"fmt"
+	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/sti"
 	"strings"
 
@@ -21,6 +22,9 @@ func main() {
 	t := test.Register(tests, solve)
 	t.Expect(2, 2286)
 	fmt.Println(solve(input))
+	benchmark.Run(func() {
+		solve(input)
+	}, benchmark.Count(1000))
 }
 
 func solve(input string) int {

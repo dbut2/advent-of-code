@@ -3,9 +3,9 @@ package benchmark
 import (
 	"fmt"
 	"runtime"
+	"slices"
 	"time"
 
-	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/timer"
 )
 
@@ -30,17 +30,17 @@ func Run(f func(), cond Condition) {
 
 	took := time.Since(start)
 
-	ot := math.Order(times, false)
+	slices.Sort(times)
 	fmt.Println(len(times), "TRIALS IN", took)
-	printTable(ot)
+	printTable(times)
 
 	i := 0
 	for point, times := range pings {
 		i++
-		ot := math.Order(times, false)
+		slices.Sort(times)
 		fmt.Println()
 		fmt.Println("POINT:", i)
-		printTable(ot)
+		printTable(times)
 		fmt.Println(point)
 	}
 }
