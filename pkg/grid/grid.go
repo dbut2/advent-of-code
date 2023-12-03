@@ -14,3 +14,62 @@ func (g Grid[T]) Get(x, y int) *T {
 	g[[2]int{x, y}] = cell
 	return cell
 }
+
+func (g Grid[T]) Adjacent(x, y int) []*T {
+	c := make([]*T, 0, 4)
+	for _, coord := range [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}} {
+		c = append(c, g.Get(x+coord[0], y+coord[1]))
+	}
+	return c
+}
+
+func (g Grid[T]) Diagonal(x, y int) []*T {
+	c := make([]*T, 0, 4)
+	for _, coord := range [][2]int{{-1, -1}, {1, -1}, {-1, 1}, {1, 1}} {
+		c = append(c, g.Get(x+coord[0], y+coord[1]))
+	}
+	return c
+}
+
+func (g Grid[T]) Surrounding(x, y int) []*T {
+	c := make([]*T, 0, 8)
+	c = append(c, g.Adjacent(x, y)...)
+	c = append(c, g.Diagonal(x, y)...)
+	return c
+}
+
+func (g Grid[T]) XRange() (r [2]int) {
+	for coord := range g {
+		r[0] = coord[0]
+		r[1] = coord[0]
+		break
+	}
+	for coord := range g {
+		r[0] = min(r[0], coord[0])
+		r[1] = max(r[1], coord[0])
+	}
+	return
+}
+
+func (g Grid[T]) YRange() (r [2]int) {
+	for coord := range g {
+		r[0] = coord[1]
+		r[1] = coord[1]
+		break
+	}
+	for coord := range g {
+		r[0] = min(r[0], coord[1])
+		r[1] = max(r[1], coord[1])
+	}
+	return
+}
+
+func (g Grid[T]) InRange(x1, y1, x2, y2 int) (s []*T) {
+	for coord, cell := range g {
+		if coord[0] < x1 || coord[1] < y1 || coord[0] > x2 || coord[1] > y2 {
+			continue
+		}
+		s = append(s, cell)
+	}
+	return
+}
