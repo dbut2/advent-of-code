@@ -27,8 +27,36 @@ In this example, the calibration values of these four lines are `12`, `38`, `15`
 
 Consider your entire calibration document. *What is the sum of all of the calibration values?*
 
-To begin, [get your puzzle input](1/input).
+Your puzzle answer was `57346`.
 
-Answer:
+\--- Part Two ---
+----------
 
-You can also [Shareon [Twitter](https://twitter.com/intent/tweet?text=%22Trebuchet%3F%21%22+%2D+Day+1+%2D+Advent+of+Code+2023&url=https%3A%2F%2Fadventofcode%2Ecom%2F2023%2Fday%2F1&related=ericwastl&hashtags=AdventOfCode) [Mastodon](javascript:void(0);)] this puzzle.
+Your calculation isn't quite right. It looks like some of the digits are actually *spelled out with letters*: `one`, `two`, `three`, `four`, `five`, `six`, `seven`, `eight`, and `nine` *also* count as valid "digits".
+
+Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+
+```
+two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen
+
+```
+
+In this example, the calibration values are `29`, `83`, `13`, `24`, `42`, `14`, and `76`. Adding these together produces `*281*`.
+
+*What is the sum of all of the calibration values?*
+
+Your puzzle answer was `57345`.
+
+Both parts of this puzzle are complete! They provide two gold stars: \*\*
+
+At this point, you should [return to your Advent calendar](/2023) and try another puzzle.
+
+If you still want to see it, you can [get your puzzle input](1/input).
+
+You can also [Shareon [Twitter](https://twitter.com/intent/tweet?text=I%27ve+completed+%22Trebuchet%3F%21%22+%2D+Day+1+%2D+Advent+of+Code+2023&url=https%3A%2F%2Fadventofcode%2Ecom%2F2023%2Fday%2F1&related=ericwastl&hashtags=AdventOfCode) [Mastodon](javascript:void(0);)] this puzzle.

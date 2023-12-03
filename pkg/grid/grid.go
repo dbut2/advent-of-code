@@ -3,9 +3,6 @@ package grid
 type Grid[T any] map[[2]int]*T
 
 func (g Grid[T]) Set(x, y int, cell T) {
-	if g == nil {
-		g = make(Grid[T])
-	}
 	g[[2]int{x, y}] = &cell
 }
 
