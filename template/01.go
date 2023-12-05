@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	_ "embed"
 	"fmt"
 
 	"github.com/dbut2/advent-of-code/pkg/test"
