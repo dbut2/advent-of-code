@@ -2,9 +2,8 @@ package main
 
 import (
 	"embed"
-	"fmt"
 
-	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
@@ -15,9 +14,9 @@ var input string
 var tests embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(1, 0)
-	fmt.Println(solve(input))
+	h := harness.New(solve, tests)
+	h.Expect(1, 0)
+	h.Solve(input)
 }
 
 func solve(input string) int {
