@@ -7,13 +7,28 @@ import (
 )
 
 func Intersection[T comparable](a, b []T) []T {
+	if len(a) > len(b) {
+		a, b = b, a
+	}
+
 	var i []T
-	for _, x := range a {
-		if slices.Contains(b, x) {
+	for n, x := range b {
+		_ = n
+		if slices.Contains(a, x) {
 			i = append(i, x)
 		}
 	}
 	return i
+}
+
+func Filter[T any](s []T, predicate func(T) bool) []T {
+	var m []T
+	for _, v := range s {
+		if predicate(v) {
+			m = append(m, v)
+		}
+	}
+	return m
 }
 
 func Range[N math.Number](a, b N) []N {

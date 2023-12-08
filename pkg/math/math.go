@@ -94,3 +94,15 @@ func Pow[N Number, M Int](x N, y M) N {
 	}
 	return result
 }
+
+func GCD[T Int](a, b T) T {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+func LCM[T Int](a, b T) T {
+	l := a * b / GCD(a, b)
+	return l
+}
