@@ -10,9 +10,7 @@ func (g Grid[T]) Get(x, y int) *T {
 	if v, ok := g[[2]int{x, y}]; ok {
 		return v
 	}
-	cell := new(T)
-	g[[2]int{x, y}] = cell
-	return cell
+	return nil
 }
 
 func (g Grid[T]) Adjacent(x, y int) []*T {
@@ -72,4 +70,13 @@ func (g Grid[T]) InRange(x1, y1, x2, y2 int) (s []*T) {
 		s = append(s, cell)
 	}
 	return
+}
+
+func (g Grid[T]) Find(f func(T) bool) *T {
+	for _, v := range g {
+		if f(*v) {
+			return v
+		}
+	}
+	return nil
 }
