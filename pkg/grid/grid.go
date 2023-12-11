@@ -36,28 +36,28 @@ func (g Grid[T]) Surrounding(x, y int) []*T {
 	return c
 }
 
-func (g Grid[T]) XRange() (r [2]int) {
+func (g Grid[T]) XRange() (x1, x2 int) {
 	for coord := range g {
-		r[0] = coord[0]
-		r[1] = coord[0]
+		x1 = coord[0]
+		x2 = coord[0]
 		break
 	}
 	for coord := range g {
-		r[0] = min(r[0], coord[0])
-		r[1] = max(r[1], coord[0])
+		x1 = min(x1, coord[0])
+		x2 = max(x2, coord[0])
 	}
 	return
 }
 
-func (g Grid[T]) YRange() (r [2]int) {
+func (g Grid[T]) YRange() (y1, y2 int) {
 	for coord := range g {
-		r[0] = coord[1]
-		r[1] = coord[1]
+		y1 = coord[1]
+		y2 = coord[1]
 		break
 	}
 	for coord := range g {
-		r[0] = min(r[0], coord[1])
-		r[1] = max(r[1], coord[1])
+		y1 = min(y1, coord[1])
+		y2 = max(y2, coord[1])
 	}
 	return
 }

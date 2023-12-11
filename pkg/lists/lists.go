@@ -21,8 +21,8 @@ func Intersection[T comparable](a, b []T) []T {
 	return i
 }
 
-func Filter[T any](s []T, predicate func(T) bool) []T {
-	var m []T
+func Filter[S ~[]E, E any](s S, predicate func(E) bool) S {
+	var m S
 	for _, v := range s {
 		if predicate(v) {
 			m = append(m, v)
@@ -40,6 +40,15 @@ func Range[N math.Number](a, b N) []N {
 		l = append(l, i)
 	}
 	return l
+}
+
+func Reduce[T any, U any](s []T, f func(U, T) U) U {
+	r := *new(U)
+	for _, v := range s {
+		r = f(r, v)
+	}
+	return r
+
 }
 
 func Map[T, U any](s []T, f func(T) U) []U {
@@ -62,14 +71,14 @@ func MapMap[T, U any, V, W comparable](s map[V]T, f func(V, T) (W, U)) map[W]U {
 func MapToSlice[T comparable, U any](s map[T]U) Pairs[T, U] {
 	l := make(Pairs[T, U], 0, len(s))
 	for k, v := range s {
-		l = append(l, Pair[T, U]{A: k, B: v})
+		l = append(l, Pair[T, U]{Key: k, Val: v})
 	}
 	return l
 }
 
 type Pair[T, U any] struct {
-	A T
-	B U
+	Key T
+	Val U
 }
 
 type Pairs[T, U any] []Pair[T, U]
@@ -77,7 +86,7 @@ type Pairs[T, U any] []Pair[T, U]
 func (p Pairs[T, U]) Keys() []T {
 	l := make([]T, len(p))
 	for i := range p {
-		l[i] = p[i].A
+		l[i] = p[i].Key
 	}
 	return l
 }
@@ -85,7 +94,7 @@ func (p Pairs[T, U]) Keys() []T {
 func (p Pairs[T, U]) Vals() []U {
 	l := make([]U, len(p))
 	for i := range p {
-		l[i] = p[i].B
+		l[i] = p[i].Val
 	}
 	return l
 }
