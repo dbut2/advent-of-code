@@ -15,15 +15,22 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 0)
+	h.Expect(1, 1320)
 	h.Solve()
 }
 
 func solve(input string) int {
-	s := utils.ParseInput(input)
+	s := utils.ParseInput(input, ",")
 
-	for j, line := range s {
-		_, _ = j, line
-
+	total := 0
+	for _, line := range s {
+		hash := 0
+		for _, char := range line {
+			hash += int(char)
+			hash *= 17
+			hash %= 256
+		}
+		total += hash
 	}
+	return total
 }
