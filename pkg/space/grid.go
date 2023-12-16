@@ -20,7 +20,7 @@ func NewGridFromInput(s []string) Grid[uint8] {
 	return g
 }
 
-func (g Grid[T]) inside(x, y int) bool {
+func (g Grid[T]) Inside(x, y int) bool {
 	if x < 0 || x >= len(g) {
 		return false
 	}
@@ -35,7 +35,7 @@ func (g Grid[T]) inside(x, y int) bool {
 func (g Grid[T]) offsets(x, y int, offsets [][2]int) []*T {
 	cells := make([]*T, 0, len(offsets))
 	for _, coord := range offsets {
-		if g.inside(x+coord[0], y+coord[1]) {
+		if g.Inside(x+coord[0], y+coord[1]) {
 			cells = append(cells, &g[x+coord[0]][y+coord[1]])
 		}
 	}

@@ -13,7 +13,7 @@ func NewCube[T any](x, y, z int) Cube[T] {
 	return c
 }
 
-func (c Cube[T]) inside(x, y, z int) bool {
+func (c Cube[T]) Inside(x, y, z int) bool {
 	if x < 0 || x >= len(c) {
 		return false
 	}
@@ -32,7 +32,7 @@ func (c Cube[T]) inside(x, y, z int) bool {
 func (c Cube[T]) offsets(x, y, z int, offsets [][3]int) []*T {
 	cells := make([]*T, 0, len(offsets))
 	for _, coord := range offsets {
-		if c.inside(x+coord[0], y+coord[1], z+coord[2]) {
+		if c.Inside(x+coord[0], y+coord[1], z+coord[2]) {
 			cells = append(cells, &c[x+coord[0]][y+coord[1]][z+coord[2]])
 		}
 	}
