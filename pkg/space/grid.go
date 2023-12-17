@@ -32,28 +32,32 @@ func (g Grid[T]) Inside(x, y int) bool {
 	return true
 }
 
-func (g Grid[T]) offsets(x, y int, offsets [][2]int) []*T {
-	cells := make([]*T, 0, len(offsets))
+func (g Grid[T]) offsets(x, y int, offsets [][2]int) map[[2]int]*T {
+	cells := make(map[[2]int]*T, len(offsets))
 	for _, coord := range offsets {
 		if g.Inside(x+coord[0], y+coord[1]) {
-			cells = append(cells, &g[x+coord[0]][y+coord[1]])
+			cells[[2]int{x + coord[0], y + coord[1]}] = &g[x+coord[0]][y+coord[1]]
 		}
 	}
 	return cells
 }
 
-func (g Grid[T]) Adjacent(x, y int) []*T {
+func (g Grid[T]) Adjacent(x, y int) map[[2]int]*T {
 	return g.offsets(x, y, [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}})
 }
 
-func (g Grid[T]) Diagonal(x, y int) []*T {
+func (g Grid[T]) Diagonal(x, y int) map[[2]int]*T {
 	return g.offsets(x, y, [][2]int{{-1, -1}, {1, -1}, {-1, 1}, {1, 1}})
 }
 
-func (g Grid[T]) Surrounding(x, y int) []*T {
-	c := make([]*T, 0, 8)
-	c = append(c, g.Adjacent(x, y)...)
-	c = append(c, g.Diagonal(x, y)...)
+func (g Grid[T]) Surrounding(x, y int) map[[2]int]*T {
+	c := make(map[[2]int]*T, 8)
+	for k, v := range g.Adjacent(x, y) {
+		c[k] = v
+	}
+	for k, v := range g.Diagonal(x, y) {
+		c[k] = v
+	}
 	return c
 }
 

@@ -39,6 +39,9 @@ func Range[N math.Number](a, b N) []N {
 	for i := low; i <= high; i++ {
 		l = append(l, i)
 	}
+	if a > b {
+		slices.Reverse(l)
+	}
 	return l
 }
 

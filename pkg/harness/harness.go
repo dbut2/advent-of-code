@@ -25,6 +25,7 @@ func New[T comparable](solve func(string) T, input string, tests embed.FS) *Harn
 
 func (h *Harness[T]) Expect(n int, value T) {
 	h.test.Expect(n, value)
+	fmt.Printf("Test %d passed\n", n)
 }
 
 func (h *Harness[T]) Solve() {
