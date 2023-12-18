@@ -18,20 +18,13 @@ func main() {
 	h.Solve()
 }
 
-var deltas = map[rune][2]int{
-	'U': {0, -1},
-	'D': {0, 1},
-	'L': {-1, 0},
-	'R': {1, 0},
-}
-
 func solve(input string) int {
 	length := 0
 	sum := 0
 
 	coord := [2]int{0, 0}
 	var newCoord [2]int
-	var direction [2]int
+	var direction rune
 	var amount int
 
 	for _, char := range input {
@@ -39,8 +32,16 @@ func solve(input string) int {
 			if amount != 0 {
 				newCoord = coord
 
-				newCoord[0] += direction[0] * amount
-				newCoord[1] += direction[1] * amount
+				switch direction {
+				case 'U':
+					newCoord[1] -= amount
+				case 'D':
+					newCoord[1] += amount
+				case 'L':
+					newCoord[0] -= amount
+				case 'R':
+					newCoord[0] += amount
+				}
 
 				sum += newCoord[0]*coord[1] - newCoord[1]*coord[0]
 				coord = newCoord
@@ -50,7 +51,7 @@ func solve(input string) int {
 
 		if char >= 'A' && char <= 'Z' {
 			amount = 0
-			direction = deltas[char]
+			direction = char
 		}
 
 		if char >= '0' && char <= '9' {
