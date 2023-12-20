@@ -37,7 +37,7 @@ func (s *Set[T]) Remove(v T) {
 	delete(*s, v)
 }
 
-func (s *Set[T]) Has(v T) bool {
+func (s *Set[T]) Contains(v T) bool {
 	_, ok := (*s)[v]
 	return ok
 }
@@ -80,7 +80,7 @@ func (s *SyncSet[T]) Has(v T) bool {
 	s.ensureLocker()
 	s.l.Lock()
 	defer s.l.Unlock()
-	return s.set.Has(v)
+	return s.set.Contains(v)
 }
 
 func (s *SyncSet[T]) ensureLocker() {

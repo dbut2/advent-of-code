@@ -1,5 +1,12 @@
 package math
 
+import (
+	"math"
+)
+
+const MaxInt = math.MaxInt
+const MinInt = math.MinInt
+
 func Abs[N Number](a N) N {
 	if a < 0 {
 		return -a
@@ -53,12 +60,20 @@ type SizedUint interface {
 	~uint8 | ~uint16 | ~uint32 | ~uint64
 }
 
-func Sum[T Number](s []T) T {
+func Sum[T Number](s ...T) T {
 	var t T
 	for _, i := range s {
 		t += i
 	}
 	return t
+}
+
+func Product[T Number](nums ...T) T {
+	p := T(1)
+	for _, v := range nums {
+		p *= v
+	}
+	return p
 }
 
 func SumMap[T comparable](s map[T]int) int {
