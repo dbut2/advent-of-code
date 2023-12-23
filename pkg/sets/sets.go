@@ -34,12 +34,12 @@ func (s *Set[T]) Add(v T) {
 }
 
 func (s *Set[T]) Remove(v T) {
-	delete(*s, v)
+	(*s)[v] = false
 }
 
 func (s *Set[T]) Contains(v T) bool {
-	_, ok := (*s)[v]
-	return ok
+	b, ok := (*s)[v]
+	return ok && b
 }
 
 func (s *Set[T]) Copy() Set[T] {

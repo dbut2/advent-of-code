@@ -20,54 +20,86 @@ func NewGridFromInput(s []string) Grid[uint8] {
 	return g
 }
 
-func (g Grid[T]) Inside(x, y int) bool {
-	if x < 0 || x >= len(g) {
+func (g *Grid[T]) Get(c Cell) *T {
+	if !g.Inside(c) {
+		return nil
+	}
+	return &(*g)[c[0]][c[1]]
+}
+
+func (g *Grid[T]) Set(c Cell, v T) {
+	if !g.Inside(c) {
+		g.growTo(c)
+	}
+	(*g)[c[0]][c[1]] = v
+}
+
+func (g *Grid[T]) growTo(c Cell) {
+	if g.Inside(c) {
+		return
+	}
+
+	if c[0] >= len(*g) {
+		*g = append(*g, make([][]T, c[0]-len(*g)+1)...)
+	}
+
+	if c[1] >= len((*g)[0]) {
+		for i := range *g {
+			(*g)[i] = append((*g)[i], make([]T, c[1]-len((*g)[i])+1)...)
+		}
+	}
+}
+
+func (g *Grid[T]) Inside(c Cell) bool {
+	if c[0] < 0 || c[1] >= len(*g) {
 		return false
 	}
 
-	if y < 0 || y >= len(g[0]) {
+	if c[1] < 0 || c[1] >= len((*g)[0]) {
 		return false
 	}
 
 	return true
 }
 
-func (g Grid[T]) offsets(x, y int, offsets [][2]int) map[[2]int]*T {
-	cells := make(map[[2]int]*T, len(offsets))
-	for _, coord := range offsets {
-		if g.Inside(x+coord[0], y+coord[1]) {
-			cells[[2]int{x + coord[0], y + coord[1]}] = &g[x+coord[0]][y+coord[1]]
+func (g *Grid[T]) offsets(c Cell, offsets []Direction) map[Cell]*T {
+	cells := make(map[Cell]*T, len(offsets))
+	for _, direction := range offsets {
+		next := c.Move(direction)
+		if g.Inside(next) {
+			cells[next] = &(*g)[next[0]][next[1]]
 		}
 	}
 	return cells
 }
 
-func (g Grid[T]) Adjacent(x, y int) map[[2]int]*T {
-	return g.offsets(x, y, [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}})
+func (g *Grid[T]) Adjacent(c Cell) map[Cell]*T {
+	return g.offsets(c, []Direction{North, South, East, West})
 }
 
-func (g Grid[T]) Diagonal(x, y int) map[[2]int]*T {
-	return g.offsets(x, y, [][2]int{{-1, -1}, {1, -1}, {-1, 1}, {1, 1}})
+func (g *Grid[T]) Diagonal(c Cell) map[Cell]*T {
+	return g.offsets(c, []Direction{North.Add(East), North.Add(West), South.Add(East), South.Add(West)})
 }
 
-func (g Grid[T]) Surrounding(x, y int) map[[2]int]*T {
-	c := make(map[[2]int]*T, 8)
-	for k, v := range g.Adjacent(x, y) {
-		c[k] = v
+func (g *Grid[T]) Surrounding(c Cell) map[Cell]*T {
+	cells := make(map[Cell]*T, 8)
+	for k, v := range g.Adjacent(c) {
+		cells[k] = v
 	}
-	for k, v := range g.Diagonal(x, y) {
-		c[k] = v
+	for k, v := range g.Diagonal(c) {
+		cells[k] = v
 	}
-	return c
+	return cells
 }
 
-func (g Grid[T]) Find(f func(T) bool) *T {
-	for i := range g {
-		for j, cell := range g[i] {
-			if f(cell) {
-				return &g[i][j]
+func (g *Grid[T]) Find(f func(Cell, T) bool) (Cell, *T) {
+	for i := range *g {
+		for j, cell := range (*g)[i] {
+			c := Cell{i, j}
+			if f(c, cell) {
+				return c, &(*g)[i][j]
 			}
 		}
 	}
-	return nil
+	return Cell{}, nil
 }
