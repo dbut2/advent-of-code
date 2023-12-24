@@ -39,23 +39,39 @@ func (g *Graph[T]) Connect(a, b T, distance int) {
 }
 
 func (g *Graph[T]) Minimise(a, b T) int {
+	distances := make(map[T]int)
+	for node := range g.Nodes {
+		distances[node] = math.MaxInt
+	}
+	distances[a] = 0
+
 	visited := sets.Set[T]{}
-	var dfs func(T, int) int
-	dfs = func(node T, length int) int {
-		if node == b {
-			return length
-		}
-		minLength := math.MaxInt
-		visited.Add(node)
-		for nextNode, nextLength := range g.Edges[node] {
-			if !visited.Contains(nextNode) {
-				minLength = min(minLength, dfs(nextNode, length+nextLength))
+
+	for len(visited) < len(g.Nodes) {
+		current := a
+		minDistance := math.MaxInt
+		for node, distance := range distances {
+			if !visited.Contains(node) && distance < minDistance {
+				current = node
+				minDistance = distance
 			}
 		}
-		visited.Remove(node)
-		return minLength
+
+		visited.Add(current)
+
+		if current == b {
+			return distances[current]
+		}
+
+		for node, distance := range g.Edges[current] {
+			if !visited.Contains(node) {
+				newDistance := distances[current] + distance
+				distances[node] = min(distances[node], newDistance)
+			}
+		}
 	}
-	return dfs(a, 0)
+
+	panic("no path")
 }
 
 func (g *Graph[T]) Maximise(a, b T) int {

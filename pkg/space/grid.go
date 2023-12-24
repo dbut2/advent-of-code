@@ -51,7 +51,7 @@ func (g *Grid[T]) growTo(c Cell) {
 }
 
 func (g *Grid[T]) Inside(c Cell) bool {
-	if c[0] < 0 || c[1] >= len(*g) {
+	if c[0] < 0 || c[0] >= len(*g) {
 		return false
 	}
 
