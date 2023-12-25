@@ -34,7 +34,7 @@ func (s *Set[T]) Add(v T) {
 }
 
 func (s *Set[T]) Remove(v T) {
-	(*s)[v] = false
+	delete(*s, v)
 }
 
 func (s *Set[T]) Contains(v T) bool {
