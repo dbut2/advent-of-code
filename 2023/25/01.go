@@ -37,7 +37,7 @@ func solve(input string) int {
 	}
 
 	for {
-		cutEdges, nodePools := graph.Karger()
+		cutEdges, nodePools := graph.MinCut()
 		if len(cutEdges) == 3 {
 			return len(nodePools[0]) * len(nodePools[1])
 		}
