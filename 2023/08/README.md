@@ -84,7 +84,7 @@ Your puzzle answer was `14321394058031`.
 
 Both parts of this puzzle are complete! They provide two gold stars: \*\*
 
-At this point, you should [return to your Advent calendar](/2023) and try another puzzle.
+At this point, all that is left is for you to [admire your Advent calendar](/2023).
 
 If you still want to see it, you can [get your puzzle input](8/input).
 

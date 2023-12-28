@@ -4,6 +4,9 @@ import (
 	"embed"
 	_ "embed"
 	"fmt"
+
+	"github.com/dbut2/advent-of-code/pkg/sets"
+	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
@@ -23,90 +26,52 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	var total int
+	grid := space.Grid[*int]{}
 
-	// add all numbers found
-	var buffer int
-	for _, line := range s {
-		for _, char := range line {
+	// parse the input and store a pointer to the buffer for each number found
+	// all digits in a sequence that make up a number will all point to the same number in grid
+	buffer := new(int)
+	bufferCells := space.Cells{}
+	for j, line := range s {
+		for i, char := range line {
 			if char >= '0' && char <= '9' {
-				buffer *= 10
-				buffer += int(char - '0')
+				*buffer *= 10
+				*buffer += int(char - '0')
+				bufferCells = append(bufferCells, space.Cell{i, j})
 			} else {
-				total += buffer
-				buffer = 0
-			}
-		}
-
-		total += buffer
-		buffer = 0
-	}
-
-	// replace everything in touching cells and everything that makes up a number that touches a symbol with a period
-	for i, line := range s {
-		for j, char := range line {
-			if (char < '0' || char > '9') && char != '.' {
-				for a := i - 1; a <= i+1; a++ {
-					if a < 0 || a >= len(s) {
-						break
-					}
-
-					// remove all in column above in and below
-					s[a] = s[a][:j] + "." + s[a][j+1:]
-
-					// remove all the left that make a number
-					b := j - 1
-					for {
-						if b < 0 || b >= len(s[0]) {
-							break
-						}
-
-						if s[a][b] >= '0' && s[a][b] <= '9' {
-							s[a] = s[a][:b] + "." + s[a][b+1:]
-						} else {
-							break
-						}
-
-						b--
-					}
-
-					// remove all the right that make a number
-					b = j + 1
-					for {
-						if b < 0 || b >= len(s[0]) {
-							break
-						}
-
-						if s[a][b] >= '0' && s[a][b] <= '9' {
-							s[a] = s[a][:b] + "." + s[a][b+1:]
-						} else {
-							break
-						}
-
-						b++
-					}
+				for _, cell := range bufferCells {
+					grid.Set(cell, buffer)
 				}
-
-			}
-		}
-	}
-
-	// minus what's left on the board, ie everything not touching a symbol
-	buffer = 0
-	for _, line := range s {
-		for _, char := range line {
-			if char >= '0' && char <= '9' {
-				buffer *= 10
-				buffer += int(char - '0')
-			} else {
-				total -= buffer
-				buffer = 0
+				buffer = new(int)
+				bufferCells = space.Cells{}
 			}
 		}
 
-		total -= buffer
-		buffer = 0
+		for _, cell := range bufferCells {
+			grid.Set(cell, buffer)
+		}
+		buffer = new(int)
+		bufferCells = space.Cells{}
 	}
 
+	numbers := sets.Set[*int]{}
+	grid2 := space.NewGridFromInput(s)
+	for cell, char := range grid2.Cells() {
+		if (*char == '.') || (*char >= '0' && *char <= '9') {
+			continue
+		}
+
+		for _, neighbourCell := range grid.Surrounding(cell) {
+			if *neighbourCell == nil {
+				continue
+			}
+			numbers.Add(*neighbourCell)
+		}
+	}
+
+	total := 0
+	for num := range numbers {
+		total += *num
+	}
 	return total
 }

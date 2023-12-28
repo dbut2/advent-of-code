@@ -18,3 +18,10 @@ func ParseInput(s string, on ...string) []string {
 	}
 	return strings.Split(strings.Trim(strings.TrimSpace(s), sep), sep)
 }
+
+func Must[T any](v T, err error) T {
+	if err != nil {
+		panic(err.Error())
+	}
+	return v
+}

@@ -25,7 +25,6 @@ func solve(input string) int {
 	s := utils.ParseInput(input)
 
 	total := 0
-
 	for _, line := range s {
 		springs := strings.Split(line, " ")[0]
 		goals := strings.Split(line, " ")[1]
@@ -34,7 +33,6 @@ func solve(input string) int {
 
 		total += validSubsets(springs, goalNumbers)
 	}
-
 	return total
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sti"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
@@ -25,6 +26,10 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
+	type submapping struct {
+		source, size, offset int
+	}
+	type mapping []submapping
 	var seeds []int
 	var mappings []mapping
 
@@ -35,15 +40,12 @@ func solve(input string) int {
 		}
 
 		if strings.Contains(line, "seeds: ") {
-			seedsString := strings.Split(line, "seeds: ")
-			seedList := strings.Split(seedsString[1], " ")
-			for _, seedItem := range seedList {
-				seeds = append(seeds, sti.Sti(seedItem))
-			}
+			line = strings.ReplaceAll(line, "seeds: ", "")
+			seeds = sti.Stis(strings.Split(line, " "))
 			continue
 		}
 
-		if strings.Contains(line, "-") {
+		if strings.Contains(line, "-to-") {
 			if len(currentMapping) > 0 {
 				mappings = append(mappings, currentMapping)
 			}
@@ -51,19 +53,18 @@ func solve(input string) int {
 			continue
 		}
 
-		values := strings.Split(line, " ")
-
+		values := sti.Stis(strings.Split(line, " "))
 		currentMapping = append(currentMapping, submapping{
-			source: sti.Sti(values[1]),
-			size:   sti.Sti(values[2]),
-			offset: sti.Sti(values[0]) - sti.Sti(values[1]),
+			source: values[1],
+			size:   values[2],
+			offset: values[0] - values[1],
 		})
 	}
 	if len(currentMapping) > 0 {
 		mappings = append(mappings, currentMapping)
 	}
 
-	lowest := -1
+	lowest := math.MaxInt
 	for _, seed := range seeds {
 		val := seed
 
@@ -76,17 +77,8 @@ func solve(input string) int {
 			}
 		}
 
-		if lowest == -1 {
-			lowest = val
-		}
 		lowest = min(lowest, val)
 	}
 
 	return lowest
-}
-
-type mapping []submapping
-
-type submapping struct {
-	source, size, offset int
 }

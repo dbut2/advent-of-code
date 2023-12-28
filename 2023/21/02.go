@@ -39,7 +39,7 @@ func solve(input string) int {
 	n := 26501365
 	seen := map[[2]int][][2]int{}
 
-	// build a grid if we visit only the first n%262 + 262 steps
+	// visit only the first n%262 + 262 steps
 	// we can use this to extrapolate a larger visit
 	possibilites := sets.SetOf(start)
 	for i := 0; i < n%262+262; i++ {
@@ -93,21 +93,22 @@ func solve(input string) int {
 	o := math.Pow(r-((r+1)%2), 2) // visits on odd grids
 	e := math.Pow(r-(r%2), 2)     // visits on even grids
 
+	// Use the grid to extrapolate the number of visits for each variation of possible grid visit states
 	total := 0
-	total += len(gridCounts[[2]int{0, 0}]) * o
-	total += len(gridCounts[[2]int{1, 0}]) * e
-	total += len(gridCounts[[2]int{2, 0}])
-	total += len(gridCounts[[2]int{-2, 0}])
-	total += len(gridCounts[[2]int{0, 2}])
-	total += len(gridCounts[[2]int{0, -2}])
-	total += len(gridCounts[[2]int{1, 1}]) * (((n) / 131) - 1)
-	total += len(gridCounts[[2]int{-1, 1}]) * (((n) / 131) - 1)
-	total += len(gridCounts[[2]int{1, -1}]) * (((n) / 131) - 1)
-	total += len(gridCounts[[2]int{-1, -1}]) * (((n) / 131) - 1)
-	total += len(gridCounts[[2]int{2, 1}]) * ((n) / 131)
-	total += len(gridCounts[[2]int{-2, 1}]) * ((n) / 131)
-	total += len(gridCounts[[2]int{2, -1}]) * ((n) / 131)
-	total += len(gridCounts[[2]int{-2, -1}]) * ((n) / 131)
+	total += len(gridCounts[[2]int{0, 0}]) * o                   // visits on fully visited odd grids
+	total += len(gridCounts[[2]int{1, 0}]) * e                   // visits on fully visited even grids
+	total += len(gridCounts[[2]int{2, 0}])                       // visits on easternmost grid
+	total += len(gridCounts[[2]int{-2, 0}])                      // visits on westernmost grid
+	total += len(gridCounts[[2]int{0, 2}])                       // visits on northernmost grid
+	total += len(gridCounts[[2]int{0, -2}])                      // visits on southernmost grid
+	total += len(gridCounts[[2]int{1, 1}]) * (((n) / 131) - 1)   // visits on inner of partially visited grids along north-eastern edge
+	total += len(gridCounts[[2]int{-1, 1}]) * (((n) / 131) - 1)  // north-western
+	total += len(gridCounts[[2]int{1, -1}]) * (((n) / 131) - 1)  // south-eastern
+	total += len(gridCounts[[2]int{-1, -1}]) * (((n) / 131) - 1) // south-western
+	total += len(gridCounts[[2]int{2, 1}]) * ((n) / 131)         // visits on outer of partially visited grids along north-eastern edge
+	total += len(gridCounts[[2]int{-2, 1}]) * ((n) / 131)        // north-western
+	total += len(gridCounts[[2]int{2, -1}]) * ((n) / 131)        // south-eastern
+	total += len(gridCounts[[2]int{-2, -1}]) * ((n) / 131)       // south-western
 
 	return total
 }

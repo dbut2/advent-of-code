@@ -16,6 +16,9 @@ jobs:
           leaderboardId: 1573050
           sessionCookie: ${{ secrets.AOC_SESSION }}
 
+      - run: |
+          sed -i '/\[Day [0-9]*\](https:\/\/adventofcode.com\/[0-9]*\/day\/[0-9]*)/!b; s|\[Day \([0-9]*\)\](https:\/\/adventofcode.com\/\([0-9]*\)\/day\/[0-9]*)|\[Day \1](\2/\1/README.md) | ⭐ [Solution](\2/\1/01.go) | ⭐ [Solution](\2/\1/02.go)|' README.md
+
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update README stars

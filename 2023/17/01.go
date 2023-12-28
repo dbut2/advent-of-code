@@ -2,11 +2,10 @@ package main
 
 import (
 	"embed"
-	"math"
 
+	"github.com/dbut2/advent-of-code/pkg/graphs"
 	"github.com/dbut2/advent-of-code/pkg/harness"
-	"github.com/dbut2/advent-of-code/pkg/lists"
-	"github.com/dbut2/advent-of-code/pkg/sets"
+	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
@@ -23,93 +22,44 @@ func main() {
 	h.Solve()
 }
 
-type node struct {
-	i, j       int
-	value      int
-	variations map[[3]*node]int
-}
-
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	grid := space.NewGrid[node](len(s[0]), len(s))
+	grid := space.NewGridFromInput(s)
 
-	for j, line := range s {
-		_, _ = j, line
+	type node struct {
+		cell  space.Cell
+		layer int
+	}
+	graph := graphs.New[node]()
 
-		for i, char := range line {
-			grid[i][j] = node{
-				i:          i,
-				j:          j,
-				value:      int(char - '0'),
-				variations: map[[3]*node]int{},
+	start := node{cell: space.Cell{0, 0}}
+	end := node{cell: space.Cell{len(grid) - 1, len(grid[0]) - 1}}
+
+	for cell := range grid.Cells() {
+		for _, direction := range []space.Direction{space.Up, space.Down, space.Left, space.Right} {
+			nextCell := cell
+			distance := 0
+			for i := 1; i <= 3; i++ {
+				nextCell = nextCell.Move(direction)
+				if !grid.Inside(nextCell) {
+					break
+				}
+				nextC := grid.Get(nextCell)
+				distance += int(*nextC - '0')
+
+				a := node{cell, math.Abs(direction[0])}
+				b := node{nextCell, math.Abs(direction[1])}
+				if a.cell == start.cell || a.cell == end.cell {
+					a.layer = 0
+				}
+				if b.cell == start.cell || b.cell == end.cell {
+					b.layer = 0
+				}
+				graph.Connect(a, b, distance)
 			}
 		}
 	}
 
-	grid[0][0].variations[[3]*node{}] = 0
-
-	nodeQueue := lists.Queue[*node]{}
-	nodeQueue.Push(&grid[1][0])
-	nodeQueue.Push(&grid[0][1])
-
-	for len(nodeQueue) > 0 {
-		n := nodeQueue.Pop()
-
-		seenNew := false
-
-		for _, neighbour := range grid.Adjacent(n.i, n.j) {
-			for last3Moves, minScore := range neighbour.variations {
-				if last3Moves[0] == n {
-					continue
-				}
-				if inARow(n, neighbour, last3Moves[0], last3Moves[1], last3Moves[2]) {
-					continue
-				}
-
-				score := minScore + n.value
-
-				key := [3]*node{neighbour, last3Moves[0], last3Moves[1]}
-
-				if oldScore, ok := n.variations[key]; ok {
-					if score < oldScore {
-						seenNew = true
-					}
-					score = min(score, oldScore)
-				} else {
-					seenNew = true
-				}
-				n.variations[key] = score
-			}
-		}
-
-		if seenNew {
-			for _, neighbour := range grid.Adjacent(n.i, n.j) {
-				nodeQueue.Push(neighbour)
-			}
-		}
-	}
-
-	vs := grid[len(grid)-1][len(grid[0])-1].variations
-	m := math.MaxInt
-	for _, v := range vs {
-		m = min(m, v)
-	}
-	return m
-}
-
-func inARow(nodes ...*node) bool {
-	is := sets.Set[int]{}
-	js := sets.Set[int]{}
-
-	for _, node := range nodes {
-		if node == nil {
-			return false
-		}
-
-		is.Add(node.i)
-		js.Add(node.j)
-	}
-
-	return len(is) == 1 || len(js) == 1
+	return graph.Minimise(start, end)
 }

@@ -24,20 +24,16 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	in := [2][]int{
-		strings.Ints(s[0]),
-		strings.Ints(s[1]),
-	}
+	times := strings.Ints(s[0])
+	distances := strings.Ints(s[1])
 
 	total := 1
-	for i := range in[0] {
-		time := in[0][i]
-		distance := in[1][i]
+	for i := range times {
 
 		perms := 0
-		for j := 0; j <= time; j++ {
-			movedDistance := j * (time - j)
-			if movedDistance > distance {
+		for j := 0; j <= times[i]; j++ {
+			movedDistance := j * (times[i] - j)
+			if movedDistance > distances[i] {
 				perms++
 			}
 		}

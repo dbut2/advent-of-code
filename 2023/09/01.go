@@ -24,14 +24,11 @@ func solve(input string) int {
 	s := utils.ParseInput(input)
 
 	total := 0
-
 	for _, line := range s {
 		numbers := strings.Ints(line)
 		layers := [][]int{numbers}
-
 		for {
 			bottomLayer := layers[len(layers)-1]
-
 			all0 := true
 			for _, val := range bottomLayer {
 				if val != 0 {
@@ -47,7 +44,6 @@ func solve(input string) int {
 			for i := range nextLayer {
 				nextLayer[i] = bottomLayer[i+1] - bottomLayer[i]
 			}
-
 			layers = append(layers, nextLayer)
 		}
 

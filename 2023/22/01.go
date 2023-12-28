@@ -74,25 +74,25 @@ func solve(input string) int {
 	}
 
 	for {
-		fell := false
+		settled := true
 
 		for _, p := range parts {
-			canFell := true
+			canFall := true
 			for _, coord := range p.blocks {
 				if !cube.Inside(coord[0], coord[1], coord[2]-1) {
-					canFell = false
+					canFall = false
 					continue
 				}
 
 				blockUnder := cube[coord[0]][coord[1]][coord[2]-1]
 				if blockUnder != nil && blockUnder != p {
-					canFell = false
+					canFall = false
 					continue
 				}
 			}
 
-			if canFell {
-				fell = true
+			if canFall {
+				settled = false
 				for i, coord := range p.blocks {
 					p.blocks[i] = [3]int{coord[0], coord[1], coord[2] - 1}
 					cube[coord[0]][coord[1]][coord[2]] = nil
@@ -101,7 +101,7 @@ func solve(input string) int {
 			}
 		}
 
-		if !fell {
+		if settled {
 			break
 		}
 	}

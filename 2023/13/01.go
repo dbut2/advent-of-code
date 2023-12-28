@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+
 	"github.com/dbut2/advent-of-code/pkg/grid"
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/utils"
@@ -92,7 +93,6 @@ func solve(input string) int {
 				total += tryReflectY * 100
 				break
 			}
-
 		}
 	}
 

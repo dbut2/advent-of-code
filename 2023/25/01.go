@@ -30,13 +30,15 @@ func solve(input string) int {
 		line = strings.ReplaceAll(line, ":", "")
 		splits := strings.Split(line, " ")
 		in := splits[0]
-		out := splits[1:]
-		for _, o := range out {
-			graph.Connect(in, o, 1)
+		outs := splits[1:]
+		for _, out := range outs {
+			// Create all graph connections
+			graph.Connect(in, out, 1)
 		}
 	}
 
 	for {
+		// Use Karger's algorithm to find the min cut
 		cutEdges, nodePools := graph.MinCut()
 		if len(cutEdges) == 3 {
 			return len(nodePools[0]) * len(nodePools[1])

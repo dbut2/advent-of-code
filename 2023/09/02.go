@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"slices"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/strings"
@@ -24,14 +25,12 @@ func solve(input string) int {
 	s := utils.ParseInput(input)
 
 	total := 0
-
 	for _, line := range s {
 		numbers := strings.Ints(line)
+		slices.Reverse(numbers)
 		layers := [][]int{numbers}
-
 		for {
 			bottomLayer := layers[len(layers)-1]
-
 			all0 := true
 			for _, val := range bottomLayer {
 				if val != 0 {
@@ -47,15 +46,14 @@ func solve(input string) int {
 			for i := range nextLayer {
 				nextLayer[i] = bottomLayer[i+1] - bottomLayer[i]
 			}
-
 			layers = append(layers, nextLayer)
 		}
 
-		prevValue := 0
-		for i := len(layers) - 1; i >= 0; i-- {
-			prevValue = layers[i][0] - prevValue
+		nextValue := 0
+		for _, layer := range layers {
+			nextValue += layer[len(layer)-1]
 		}
-		total += prevValue
+		total += nextValue
 	}
 	return total
 }

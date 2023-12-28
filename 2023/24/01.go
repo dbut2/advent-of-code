@@ -62,6 +62,9 @@ func solve(input string) int {
 				continue
 			}
 
+			// Create an equation that represents all possible placings of x and y
+			// Use the interaction of the two equations to find if inside collision area if at all
+
 			y1 := float64(h1.py)
 			m1 := float64(h1.vy) / float64(h1.vx)
 			x1 := float64(h1.px)
@@ -94,5 +97,6 @@ func solve(input string) int {
 		}
 	}
 
+	// All pairings found twice, return half
 	return total / 2
 }
