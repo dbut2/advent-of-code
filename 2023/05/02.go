@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sti"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
@@ -25,6 +26,30 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
+	type submapping struct {
+		source, size, offset int
+	}
+	type mapping []submapping
+
+	convert := func(m mapping, in int) int {
+		for _, c := range m {
+			if in >= c.source && in <= c.source+c.size {
+				return in + c.offset
+			}
+		}
+		return in
+	}
+	splitRangesAt := func(s [][2]int, n int) [][2]int {
+		for i, ss := range s {
+			if n > ss[0] && n <= ss[1] {
+				s[i][1] = n - 1
+				s = append(s, [2]int{n, ss[1]})
+				return s
+			}
+		}
+		return s
+	}
+
 	var seedPairs [][2]int
 	var mappings []mapping
 
@@ -35,16 +60,15 @@ func solve(input string) int {
 		}
 
 		if strings.Contains(line, "seeds: ") {
-			seedsString := strings.Split(line, "seeds: ")
-			seedList := strings.Split(seedsString[1], " ")
-
-			for i := 0; i < len(seedList); i += 2 {
-				seedPairs = append(seedPairs, [2]int{sti.Sti(seedList[i]), sti.Sti(seedList[i]) + sti.Sti(seedList[i+1])})
+			line = strings.ReplaceAll(line, "seeds: ", "")
+			seeds := sti.Stis(strings.Split(line, " "))
+			for i := 0; i < len(seeds); i += 2 {
+				seedPairs = append(seedPairs, [2]int{seeds[i], seeds[i] + seeds[i+1]})
 			}
 			continue
 		}
 
-		if strings.Contains(line, "-") {
+		if strings.Contains(line, "-to-") {
 			if len(currentMapping) > 0 {
 				mappings = append(mappings, currentMapping)
 			}
@@ -52,20 +76,18 @@ func solve(input string) int {
 			continue
 		}
 
-		values := strings.Split(line, " ")
-
+		values := sti.Stis(strings.Split(line, " "))
 		currentMapping = append(currentMapping, submapping{
-			source: sti.Sti(values[1]),
-			size:   sti.Sti(values[2]),
-			offset: sti.Sti(values[0]) - sti.Sti(values[1]),
+			source: values[1],
+			size:   values[2],
+			offset: values[0] - values[1],
 		})
 	}
 	if len(currentMapping) > 0 {
 		mappings = append(mappings, currentMapping)
 	}
 
-	lowest := -1
-
+	lowest := math.MaxInt
 	for _, pair := range seedPairs {
 		ranges := [][2]int{pair}
 
@@ -75,8 +97,8 @@ func solve(input string) int {
 			}
 
 			for i := range ranges {
-				ranges[i][0] = mapping.convert(ranges[i][0])
-				ranges[i][1] = mapping.convert(ranges[i][1])
+				ranges[i][0] = convert(mapping, ranges[i][0])
+				ranges[i][1] = convert(mapping, ranges[i][1])
 			}
 		}
 
@@ -90,30 +112,4 @@ func solve(input string) int {
 	}
 
 	return lowest
-}
-
-type mapping []submapping
-
-type submapping struct {
-	source, size, offset int
-}
-
-func (m mapping) convert(in int) int {
-	for _, c := range m {
-		if in >= c.source && in <= c.source+c.size {
-			return in + c.offset
-		}
-	}
-	return in
-}
-
-func splitRangesAt(s [][2]int, n int) [][2]int {
-	for i, ss := range s {
-		if n > ss[0] && n <= ss[1] {
-			s[i][1] = n - 1
-			s = append(s, [2]int{n, ss[1]})
-			return s
-		}
-	}
-	return s
 }

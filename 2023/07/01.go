@@ -18,36 +18,34 @@ var input string
 var tests embed.FS
 
 func main() {
-	h := harness.New(solve, tests)
+	h := harness.New(solve, input, tests)
 	h.Expect(1, 6440)
-	h.Solve(input)
-}
-
-type hand struct {
-	hand string
-	bid  int
+	h.Solve()
 }
 
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
+	type hand struct {
+		hand string
+		bid  int
+	}
 	var hands []hand
 	for _, line := range s {
 		split := strings.Split(line, " ")
-		h := hand{
+		hands = append(hands, hand{
 			hand: split[0],
 			bid:  sti.Sti(split[1]),
-		}
-		hands = append(hands, h)
+		})
 	}
 
 	// sort hands based on score
 	slices.SortFunc(hands, func(a, b hand) int {
-		aScore := score(a)
-		bScore := score(b)
+		aScore := score(a.hand)
+		bScore := score(b.hand)
 
+		// use hand score if different
 		if aScore != bScore {
-			// use hand score if different
 			return aScore - bScore
 		}
 		// else find first different card and use card value as comparison
@@ -66,9 +64,9 @@ func solve(input string) int {
 	return total
 }
 
-func score(h hand) int {
+func score(hand string) int {
 	cardCounts := map[rune]int{}
-	for _, char := range h.hand {
+	for _, char := range hand {
 		cardCounts[char]++
 	}
 
@@ -80,40 +78,33 @@ func score(h hand) int {
 	slices.Reverse(counts)
 
 	// Five of a kind, where all five cards have the same label: AAAAA
-	if len(counts) == 1 && counts[0] == 5 {
+	if slices.Equal(counts, []int{5}) {
 		return 7
 	}
-
 	// Four of a kind, where four cards have the same label and one card has a different label: AA8AA
-	if len(counts) == 2 && counts[0] == 4 && counts[1] == 1 {
+	if slices.Equal(counts, []int{4, 1}) {
 		return 6
 	}
-
 	// Full house, where three cards have the same label, and the remaining two cards share a different label: 23332
-	if len(counts) == 2 && counts[0] == 3 && counts[1] == 2 {
+	if slices.Equal(counts, []int{3, 2}) {
 		return 5
 	}
-
 	// Three of a kind, where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
-	if len(counts) == 3 && counts[0] == 3 && counts[1] == 1 && counts[2] == 1 {
+	if slices.Equal(counts, []int{3, 1, 1}) {
 		return 4
 	}
-
 	// Two pair, where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
-	if len(counts) == 3 && counts[0] == 2 && counts[1] == 2 && counts[2] == 1 {
+	if slices.Equal(counts, []int{2, 2, 1}) {
 		return 3
 	}
-
 	// One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
-	if len(counts) == 4 && counts[0] == 2 && counts[1] == 1 && counts[2] == 1 && counts[3] == 1 {
+	if slices.Equal(counts, []int{2, 1, 1, 1}) {
 		return 2
 	}
-
 	// High card, where all cards' labels are distinct: 23456
-	if len(counts) == 5 {
+	if slices.Equal(counts, []int{1, 1, 1, 1, 1}) {
 		return 1
 	}
-
 	return 0
 }
 

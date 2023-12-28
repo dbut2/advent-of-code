@@ -20,15 +20,14 @@ func main() {
 	h.Solve()
 }
 
-type node struct {
-	left, right string
-}
-
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
 	var instruction string
-	nodes := map[string]*node{}
+	type node struct {
+		left, right string
+	}
+	nodes := map[string]node{}
 
 	for i, line := range s {
 		if i == 0 {
@@ -43,13 +42,12 @@ func solve(input string) int {
 		line = strings.ReplaceAll(line, "(", "")
 		line = strings.ReplaceAll(line, ",", "")
 		line = strings.ReplaceAll(line, ")", "")
-		parts := strings.Split(line, " ")
 
-		n := node{
+		parts := strings.Split(line, " ")
+		nodes[parts[0]] = node{
 			left:  parts[2],
 			right: parts[3],
 		}
-		nodes[parts[0]] = &n
 	}
 
 	count := 0

@@ -74,25 +74,25 @@ func solve(input string) int {
 	}
 
 	for {
-		fell := false
+		settled := true
 
 		for _, p := range parts {
-			canFell := true
+			canFall := true
 			for _, coord := range p.blocks {
 				if !cube.Inside(coord[0], coord[1], coord[2]-1) {
-					canFell = false
+					canFall = false
 					continue
 				}
 
 				blockUnder := cube[coord[0]][coord[1]][coord[2]-1]
 				if blockUnder != nil && blockUnder != p {
-					canFell = false
+					canFall = false
 					continue
 				}
 			}
 
-			if canFell {
-				fell = true
+			if canFall {
+				settled = false
 				for i, coord := range p.blocks {
 					p.blocks[i] = [3]int{coord[0], coord[1], coord[2] - 1}
 					cube[coord[0]][coord[1]][coord[2]] = nil
@@ -101,7 +101,7 @@ func solve(input string) int {
 			}
 		}
 
-		if !fell {
+		if settled {
 			break
 		}
 	}
@@ -125,11 +125,11 @@ func solve(input string) int {
 
 	total := 0
 	for _, p := range parts {
-		fellen := sets.SetOf(p)
+		disintegrated := sets.SetOf(p)
 		for {
-			hasFellen := false
+			hasDisintegrated := false
 			for _, p2 := range parts {
-				if fellen.Contains(p2) {
+				if disintegrated.Contains(p2) {
 					continue
 				}
 
@@ -137,25 +137,25 @@ func solve(input string) int {
 					continue
 				}
 
-				willFell := true
+				willDisintegrate := true
 				for supports := range supportingMap[p2] {
-					if !fellen.Contains(supports) {
-						willFell = false
+					if !disintegrated.Contains(supports) {
+						willDisintegrate = false
 						break
 					}
 				}
 
-				if willFell {
-					fellen.Add(p2)
-					hasFellen = true
+				if willDisintegrate {
+					disintegrated.Add(p2)
+					hasDisintegrated = true
 				}
 			}
 
-			if !hasFellen {
+			if !hasDisintegrated {
 				break
 			}
 		}
-		total += len(fellen) - 1
+		total += len(disintegrated) - 1
 	}
 	return total
 }

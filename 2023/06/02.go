@@ -3,9 +3,10 @@ package main
 import (
 	"embed"
 	"fmt"
+	"math"
+	"strings"
 
-	"github.com/dbut2/advent-of-code/pkg/buffers"
-	"github.com/dbut2/advent-of-code/pkg/chars"
+	strings2 "github.com/dbut2/advent-of-code/pkg/strings"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
@@ -25,27 +26,17 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	in := [2]int{}
-	for i, line := range s {
-		buffer := buffers.Number(0)
-		for _, char := range line {
-			if chars.IsNum(char) {
-				buffer.Add(chars.NumVal(char))
-			}
-		}
-		in[i] = buffer.Clear()
-	}
+	s[0] = strings.ReplaceAll(s[0], " ", "")
+	time := float64(strings2.Ints(s[0])[0])
+	s[1] = strings.ReplaceAll(s[1], " ", "")
+	distance := float64(strings2.Ints(s[1])[0])
 
-	time := in[0]
-	distance := in[1]
+	discriminant := time*time - 4*distance
 
-	perms := 0
-	for j := 0; j <= time; j++ {
-		movedDistance := j * (time - j)
-		if movedDistance > distance {
-			perms++
-		}
-	}
+	root1 := (time + math.Sqrt(discriminant)) / 2
+	root2 := (time - math.Sqrt(discriminant)) / 2
+
+	perms := int(math.Floor(root1)-math.Ceil(root2)) + 1
 
 	return perms
 }

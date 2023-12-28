@@ -40,7 +40,14 @@ func (g *Grid[T]) growTo(c Cell) {
 	}
 
 	if c[0] >= len(*g) {
-		*g = append(*g, make([][]T, c[0]-len(*g)+1)...)
+		l := c[1]
+		for i := range *g {
+			l = max(l, len((*g)[i]))
+		}
+
+		for i := len(*g); i <= c[0]; i++ {
+			*g = append(*g, make([]T, l))
+		}
 	}
 
 	if c[1] >= len((*g)[0]) {
@@ -102,4 +109,14 @@ func (g *Grid[T]) Find(f func(Cell, T) bool) (Cell, *T) {
 		}
 	}
 	return Cell{}, nil
+}
+
+func (g *Grid[T]) Cells() map[Cell]*T {
+	cells := make(map[Cell]*T, len(*g)*len((*g)[0]))
+	for i := range *g {
+		for j := range (*g)[i] {
+			cells[Cell{i, j}] = &(*g)[i][j]
+		}
+	}
+	return cells
 }

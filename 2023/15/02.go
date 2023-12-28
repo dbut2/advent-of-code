@@ -21,20 +21,19 @@ func main() {
 	h.Solve()
 }
 
-type lens struct {
-	label string
-	focal int
-}
-
 func solve(input string) int {
 	s := utils.ParseInput(input, ",")
 
+	type lens struct {
+		label string
+		focal int
+	}
 	boxes := [256][]lens{}
 
 	for _, line := range s {
 		if strings.Contains(line, "-") {
-			parts := strings.Split(line, "-")
-			label := parts[0]
+			splits := strings.Split(line, "-")
+			label := splits[0]
 
 			hash := 0
 			for _, char := range label {
@@ -52,9 +51,9 @@ func solve(input string) int {
 		}
 
 		if strings.Contains(line, "=") {
-			parts := strings.Split(line, "=")
-			label := parts[0]
-			focal := sti.Sti(parts[1])
+			splits := strings.Split(line, "=")
+			label := splits[0]
+			focal := sti.Sti(splits[1])
 
 			hash := 0
 			for _, char := range label {

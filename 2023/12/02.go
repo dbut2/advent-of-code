@@ -29,7 +29,6 @@ func solve(input string) int {
 
 	wg := &sync.WaitGroup{}
 	total := atomic.Int64{}
-
 	for _, line := range s {
 		wg.Add(1)
 		springs := strings.Split(line, " ")[0]
@@ -68,7 +67,7 @@ func validSets(springs string, goalNumbers []int) int {
 			springs:     springs,
 			maxI:        nextI,
 			goalNumbers: goalNumbers,
-			totalWant:   math.Sum(goalNumbers),
+			totalWant:   math.Sum(goalNumbers...),
 		}
 
 		nextRound := map[[2]int]int{}

@@ -34,7 +34,6 @@ func solve(input string) int {
 	seen := map[string]int{}
 
 	var cycleStart, cycleEnd int
-
 	for n := 1; ; n++ {
 		cycle(s)
 
@@ -47,17 +46,10 @@ func solve(input string) int {
 	}
 
 	remaining := (1e9 - cycleStart) % (cycleEnd - cycleStart)
-
 	for n := 0; n < remaining; n++ {
 		cycle(s)
 	}
 
-	total := score(s)
-
-	return total
-}
-
-func score(s []string) int {
 	total := 0
 	for j := range s {
 		for i := range s[j] {

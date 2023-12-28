@@ -3,9 +3,9 @@ package main
 import (
 	"embed"
 	_ "embed"
-	"fmt"
 
-	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/chars"
+	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
@@ -16,43 +16,30 @@ var input string
 var tests embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(1, 0)
-	fmt.Println(solve(input))
+	h := harness.New(solve, input, tests)
+	h.Expect(1, 142)
+	h.Solve()
 }
 
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
 	total := 0
-
 	for _, line := range s {
-		firstDigit := 0
-		firstSet := false
-
+		firstDigit := -1
 		lastDigit := 0
 
 		for _, char := range line {
-			if char < '0' {
+			if !chars.IsNum(char) {
 				continue
 			}
 
-			if char > '9' {
-				continue
+			if firstDigit == -1 {
+				firstDigit = chars.NumVal(char)
 			}
-
-			dig := char - '0'
-
-			if !firstSet {
-				firstDigit = int(dig)
-				firstSet = true
-			}
-
-			lastDigit = int(dig)
+			lastDigit = chars.NumVal(char)
 		}
-
 		total += (firstDigit * 10) + lastDigit
 	}
-
 	return total
 }

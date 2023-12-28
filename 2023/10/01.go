@@ -2,12 +2,11 @@ package main
 
 import (
 	"embed"
-	"math"
 
-	"github.com/dbut2/advent-of-code/pkg/grid"
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/lists"
 	"github.com/dbut2/advent-of-code/pkg/sets"
+	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
@@ -23,124 +22,87 @@ func main() {
 	h.Solve()
 }
 
-type Pipe struct {
-	shape       Shape
-	x, y        int
-	connections [2]*Pipe
-	distance    int
-}
-
-type Shape rune
-
 const (
-	NS     Shape = '|'
-	EW     Shape = '-'
-	NE     Shape = 'L'
-	NW     Shape = 'J'
-	SW     Shape = '7'
-	SE     Shape = 'F'
-	Ground Shape = '.'
-	Start  Shape = 'S'
+	NS     uint8 = '|'
+	EW     uint8 = '-'
+	NE     uint8 = 'L'
+	NW     uint8 = 'J'
+	SW     uint8 = '7'
+	SE     uint8 = 'F'
+	Ground uint8 = '.'
+	Start  uint8 = 'S'
 )
 
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	g := grid.Grid[Pipe]{}
+	grid := space.NewGridFromInput(s)
 
-	for i, line := range s {
-		for j, char := range line {
-			p := Pipe{
-				shape:    Shape(char),
-				x:        i,
-				y:        j,
-				distance: math.MaxInt,
-			}
-			g.Set(i, j, p)
-		}
-	}
-
-	start := g.Find(func(pipe Pipe) bool {
-		return pipe.shape == Start
+	start, _ := grid.Find(func(cell space.Cell, pipe uint8) bool {
+		return pipe == Start
 	})
-	start.distance = 0
 
 	// determine start pipe shape
 	{
-		northCell := g.Get(start.x-1, start.y)
-		southCell := g.Get(start.x+1, start.y)
-		eastCell := g.Get(start.x, start.y+1)
-		westCell := g.Get(start.x, start.y-1)
+		northCell := grid.Get(start.Move(space.North))
+		southCell := grid.Get(start.Move(space.South))
+		eastCell := grid.Get(start.Move(space.East))
+		westCell := grid.Get(start.Move(space.West))
 
-		north := northCell != nil && (northCell.shape == NS || northCell.shape == SW || northCell.shape == SE)
-		south := southCell != nil && (southCell.shape == NS || southCell.shape == NE || northCell.shape == NW)
-		east := eastCell != nil && (eastCell.shape == EW || eastCell.shape == NW || eastCell.shape == SW)
-		west := westCell != nil && (westCell.shape == EW || westCell.shape == NE || westCell.shape == SE)
+		north := northCell != nil && (*northCell == NS || *northCell == SW || *northCell == SE)
+		south := southCell != nil && (*southCell == NS || *southCell == NE || *southCell == NW)
+		east := eastCell != nil && (*eastCell == EW || *eastCell == NW || *eastCell == SW)
+		west := westCell != nil && (*westCell == EW || *westCell == NE || *westCell == SE)
 
 		switch {
 		case north && south:
-			start.shape = NS
+			grid.Set(start, NS)
 		case east && west:
-			start.shape = EW
+			grid.Set(start, EW)
 		case north && east:
-			start.shape = NE
+			grid.Set(start, NE)
 		case north && west:
-			start.shape = NW
+			grid.Set(start, NW)
 		case south && west:
-			start.shape = SW
+			grid.Set(start, SW)
 		case south && east:
-			start.shape = SE
+			grid.Set(start, SE)
 		}
 	}
 
 	// create connections between pipes
-	connectionOffsets := map[Shape][2][2]int{
-		NS: {{-1, 0}, {1, 0}},
-		EW: {{0, 1}, {0, -1}},
-		NE: {{-1, 0}, {0, 1}},
-		NW: {{-1, 0}, {0, -1}},
-		SW: {{1, 0}, {0, -1}},
-		SE: {{1, 0}, {0, 1}},
-	}
-	for _, pipe := range g {
-		x1 := connectionOffsets[pipe.shape][0][0]
-		y1 := connectionOffsets[pipe.shape][0][1]
-		x2 := connectionOffsets[pipe.shape][1][0]
-		y2 := connectionOffsets[pipe.shape][1][1]
-
-		pipe.connections = [2]*Pipe{
-			g.Get(pipe.x+x1, pipe.y+y1),
-			g.Get(pipe.x+x2, pipe.y+y2),
-		}
+	connectionDirections := map[uint8][2][2]int{
+		NS: {space.North, space.South},
+		EW: {space.West, space.East},
+		NE: {space.North, space.East},
+		NW: {space.North, space.West},
+		SW: {space.South, space.West},
+		SE: {space.South, space.East},
 	}
 
-	// calculate distance from each loop pipe to start
-	loop := sets.Set[*Pipe]{}
-	queue := lists.Queue[*Pipe]{}
-	queue.Push(start.connections[0], start.connections[1])
+	seen := sets.SetOf(start)
+	loop := []space.Cell{start}
+	queue := lists.Queue[space.Cell]{start.Move(connectionDirections[*grid.Get(start)][0])}
+
 	for len(queue) > 0 {
-		pipe := queue.Pop()
-		loop.Add(pipe)
+		cell := queue.Pop()
 
-		lowestConnection := math.MaxInt
-		for _, connection := range pipe.connections {
-			lowestConnection = min(lowestConnection, connection.distance)
+		if seen.Contains(cell) {
+			continue
+		}
+		seen.Add(cell)
+
+		pipe := grid.Get(cell)
+		if pipe == nil {
+			continue
 		}
 
-		newDistance := lowestConnection + 1
-		if newDistance < pipe.distance {
-			pipe.distance = newDistance
-			queue.Push(pipe.connections[0], pipe.connections[1])
-		}
-	}
-
-	// find the furthest pipe from start
-	furthestPipe := start
-	for pipe := range loop {
-		if pipe.distance > furthestPipe.distance {
-			furthestPipe = pipe
+		loop = append(loop, cell)
+		for _, direction := range connectionDirections[*grid.Get(cell)] {
+			neighbor := cell.Move(direction)
+			queue.Push(neighbor)
 		}
 	}
 
-	return furthestPipe.distance
+	return len(loop) / 2
 }

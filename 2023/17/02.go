@@ -2,11 +2,10 @@ package main
 
 import (
 	"embed"
-	"math"
 
-	"github.com/dbut2/advent-of-code/pkg/chars"
+	"github.com/dbut2/advent-of-code/pkg/graphs"
 	"github.com/dbut2/advent-of-code/pkg/harness"
-	"github.com/dbut2/advent-of-code/pkg/lists"
+	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
@@ -27,103 +26,43 @@ func main() {
 func solve(input string) int {
 	s := utils.ParseInput(input)
 
-	heatLoss := space.NewGrid[int](len(s[0]), len(s))
-	minsA := space.NewGrid[int](len(s[0]), len(s))
-	minsB := space.NewGrid[int](len(s[0]), len(s))
+	grid := space.NewGridFromInput(s)
 
-	for j, line := range s {
-		_, _ = j, line
-
-		for i, char := range line {
-			heatLoss[i][j] = chars.NumVal(char)
-			minsA[i][j] = math.MaxInt
-			minsB[i][j] = math.MaxInt
-		}
+	type node struct {
+		cell  space.Cell
+		layer int
 	}
+	graph := graphs.New[node]()
 
-	type update struct {
-		x, y         int
-		newMin       int
-		onHorizontal bool
-	}
+	start := node{cell: space.Cell{0, 0}}
+	end := node{cell: space.Cell{len(grid) - 1, len(grid[0]) - 1}}
 
-	queue := lists.Queue[update]{}
-
-	queue.Push(update{0, 0, 0, true})
-	queue.Push(update{0, 0, 0, false})
-
-	for len(queue) > 0 {
-		item := queue.Pop()
-
-		mins := minsA
-		if item.onHorizontal {
-			mins = minsB
-		}
-
-		if item.newMin >= mins[item.x][item.y] {
-			continue
-		}
-
-		mins[item.x][item.y] = item.newMin
-
-		switch item.onHorizontal {
-		case true:
-			runningTotal := item.newMin
+	for cell := range grid.Cells() {
+		for _, direction := range []space.Direction{space.Up, space.Down, space.Left, space.Right} {
+			nextCell := cell
+			distance := 0
 			for i := 1; i <= 10; i++ {
-				x, y := item.x+i, item.y
-				if heatLoss.Inside(x, y) {
-					runningTotal += heatLoss[x][y]
-					if i >= 4 {
-						queue.Push(update{x, y, runningTotal, false})
-					}
-				} else {
+				nextCell = nextCell.Move(direction)
+				if !grid.Inside(nextCell) {
 					break
 				}
-			}
+				nextC := grid.Get(nextCell)
+				distance += int(*nextC - '0')
 
-			runningTotal = item.newMin
-			for i := 1; i <= 10; i++ {
-				x, y := item.x-i, item.y
-				if heatLoss.Inside(x, y) {
-					runningTotal += heatLoss[x][y]
-					if i >= 4 {
-						queue.Push(update{x, y, runningTotal, false})
+				if i >= 4 {
+					a := node{cell, math.Abs(direction[0])}
+					b := node{nextCell, math.Abs(direction[1])}
+					if a.cell == start.cell || a.cell == end.cell {
+						a.layer = 0
 					}
-				} else {
-					break
-				}
-			}
-		case false:
-			runningTotal := item.newMin
-			for i := 1; i <= 10; i++ {
-				x, y := item.x, item.y+i
-				if heatLoss.Inside(x, y) {
-					runningTotal += heatLoss[x][y]
-					if i >= 4 {
-						queue.Push(update{x, y, runningTotal, true})
+					if b.cell == start.cell || b.cell == end.cell {
+						b.layer = 0
 					}
-				} else {
-					break
-				}
-			}
-
-			runningTotal = item.newMin
-			for i := 1; i <= 10; i++ {
-				x, y := item.x, item.y-i
-				if heatLoss.Inside(x, y) {
-					runningTotal += heatLoss[x][y]
-					if i >= 4 {
-						queue.Push(update{x, y, runningTotal, true})
-					}
-				} else {
-					break
+					graph.Connect(a, b, distance)
 				}
 			}
 		}
 	}
 
-	endNodeA := minsA[len(heatLoss)-1][len(heatLoss[0])-1]
-	endNodeB := minsB[len(heatLoss)-1][len(heatLoss[0])-1]
-
-	return min(endNodeA, endNodeB)
+	return graph.Minimise(start, end)
 }

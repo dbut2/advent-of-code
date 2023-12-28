@@ -50,6 +50,7 @@ func solve(input string) int {
 
 	hs = hs[:3]
 
+	// Use a system of equations solver
 	for i, h := range hs {
 		fmt.Printf("x + i * %s = %d + %d * %s\n", string(rune(i+'a')), h.px, h.vx, string(rune(i+'a')))
 		fmt.Printf("y + j * %s = %d + %d * %s\n", string(rune(i+'a')), h.py, h.vy, string(rune(i+'a')))

@@ -60,17 +60,16 @@ func solve(input string) int {
 		line = strings.ReplaceAll(line, "(", "")
 		line = strings.ReplaceAll(line, ",", "")
 		line = strings.ReplaceAll(line, ")", "")
-		parts := strings.Split(line, " ")
 
-		n := node{
+		parts := strings.Split(line, " ")
+		n := &node{
 			value: parts[0],
 			left:  parts[2],
 			right: parts[3],
 		}
-		nodes[parts[0]] = &n
-
-		if parts[0][2] == 'A' {
-			startingNodes = append(startingNodes, &n)
+		nodes[n.value] = n
+		if n.value[2] == 'A' {
+			startingNodes = append(startingNodes, n)
 		}
 	}
 

@@ -3,9 +3,9 @@ package main
 import (
 	"embed"
 	_ "embed"
-	"fmt"
 
-	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/chars"
+	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
@@ -16,78 +16,39 @@ var input string
 var tests embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(2, 281)
-	fmt.Println(solve(input))
+	h := harness.New(solve, input, tests)
+	h.Expect(2, 281)
+	h.Solve()
 }
 
 func solve(input string) int {
-	checkWord("ancone", 3, "one")
-
 	s := utils.ParseInput(input)
 
+	words := []string{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+
 	total := 0
-
 	for _, line := range s {
-		firstDigit := 0
-
-		firstSet := false
+		firstDigit := -1
 		lastDigit := 0
 
 		for i, char := range line {
 			var dig int
 
 			found := false
-
-			if char >= '0' && char <= '9' {
-				dig = int(char - '0')
+			if chars.IsNum(char) {
+				dig = chars.NumVal(char)
 				found = true
 			}
-
 			if !found {
-				switch {
-				case checkWord(line, i, "zero"):
-					found = true
-					dig = 0
-				case checkWord(line, i, "one"):
-					found = true
-					dig = 1
-				case checkWord(line, i, "two"):
-					found = true
-					dig = 2
-				case checkWord(line, i, "three"):
-					found = true
-					dig = 3
-				case checkWord(line, i, "four"):
-					found = true
-					dig = 4
-				case checkWord(line, i, "five"):
-					found = true
-					dig = 5
-				case checkWord(line, i, "six"):
-					found = true
-					dig = 6
-				case checkWord(line, i, "seven"):
-					found = true
-					dig = 7
-				case checkWord(line, i, "eight"):
-					found = true
-					dig = 8
-				case checkWord(line, i, "nine"):
-					found = true
-					dig = 9
-				}
+				dig, found = checkWords(line, i, words)
 			}
-
 			if !found {
 				continue
 			}
 
-			if !firstSet {
+			if firstDigit == -1 {
 				firstDigit = dig
-				firstSet = true
 			}
-
 			lastDigit = dig
 		}
 
@@ -97,16 +58,18 @@ func solve(input string) int {
 	return total
 }
 
-func checkWord(line string, i int, word string) bool {
-	for j := range word {
-		if i+j >= len(line) {
-			return false
-		}
-
-		if line[i+j] != word[j] {
-			return false
+func checkWords(line string, i int, words []string) (int, bool) {
+	for j, word := range words {
+		if checkWord(line, i, word) {
+			return j, true
 		}
 	}
+	return 0, false
+}
 
-	return true
+func checkWord(line string, i int, word string) bool {
+	if i+len(word) > len(line) {
+		return false
+	}
+	return line[i:i+len(word)] == word
 }
