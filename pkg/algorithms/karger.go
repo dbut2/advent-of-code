@@ -2,6 +2,7 @@ package algorithms
 
 import (
 	"math/rand"
+	"slices"
 
 	"github.com/dbut2/advent-of-code/pkg/sets"
 )
@@ -21,7 +22,7 @@ func Karger[T comparable](g Graph[T]) ([]Edge[T], [2][]T) {
 		i := rand.Intn(len(edgeSet))
 		edge := edgeSet.Slice()[i]
 		collapsedInto[edge.A] = append(collapsedInto[edge.A], edge.B)
-		collapsedInto[edge.A] = append(collapsedInto[edge.A], collapsedInto[edge.B]...)
+		collapsedInto[edge.A] = slices.Concat(collapsedInto[edge.A], collapsedInto[edge.B])
 		edgeSet.Remove(edge)
 		nodeSet.Remove(edge.B)
 		for edge2 := range edgeSet {

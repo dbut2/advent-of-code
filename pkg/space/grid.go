@@ -1,10 +1,14 @@
 package space
 
+import (
+	"slices"
+)
+
 type Grid[T any] [][]T
 
 func NewGrid[T any](x, y int) Grid[T] {
 	g := make([][]T, x)
-	for i := 0; i < x; i++ {
+	for i := range x {
 		g[i] = make([]T, y)
 	}
 	return g
@@ -52,7 +56,7 @@ func (g *Grid[T]) growTo(c Cell) {
 
 	if c[1] >= len((*g)[0]) {
 		for i := range *g {
-			(*g)[i] = append((*g)[i], make([]T, c[1]-len((*g)[i])+1)...)
+			(*g)[i] = slices.Concat((*g)[i], make([]T, c[1]-len((*g)[i])+1))
 		}
 	}
 }

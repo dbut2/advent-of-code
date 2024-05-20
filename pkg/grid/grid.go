@@ -1,5 +1,9 @@
 package grid
 
+import (
+	"slices"
+)
+
 type Grid[T any] map[[2]int]*T
 
 func (g Grid[T]) Set(x, y int, cell T) {
@@ -31,8 +35,7 @@ func (g Grid[T]) Diagonal(x, y int) []*T {
 
 func (g Grid[T]) Surrounding(x, y int) []*T {
 	c := make([]*T, 0, 8)
-	c = append(c, g.Adjacent(x, y)...)
-	c = append(c, g.Diagonal(x, y)...)
+	c = slices.Concat(c, g.Adjacent(x, y), g.Diagonal(x, y))
 	return c
 }
 

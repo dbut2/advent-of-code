@@ -11,3 +11,12 @@ func (s *Stack[T]) Pop() T {
 	*s = (*s)[:len(*s)-1]
 	return item
 }
+
+func (s *Stack[T]) Seq(yield func(T) bool) {
+	for len(*s) > 0 {
+		item := s.Pop()
+		if !yield(item) {
+			return
+		}
+	}
+}

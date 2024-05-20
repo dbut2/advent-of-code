@@ -1,10 +1,14 @@
 package space
 
+import (
+	"slices"
+)
+
 type Cube[T any] [][][]T
 
 func NewCube[T any](x, y, z int) Cube[T] {
 	c := make([][][]T, x)
-	for i := 0; i < x; i++ {
+	for i := range x {
 		c[i] = make([][]T, y)
 		for j := 0; j < y; j++ {
 			c[i][j] = make([]T, z)
@@ -53,9 +57,7 @@ func (c Cube[T]) Corners(x, y, z int) []*T {
 
 func (c Cube[T]) Surrounding(x, y, z int) []*T {
 	cells := make([]*T, 0, 26)
-	cells = append(cells, c.Adjacent(x, y, z)...)
-	cells = append(cells, c.Edges(x, y, z)...)
-	cells = append(cells, c.Corners(x, y, z)...)
+	cells = slices.Concat(cells, c.Adjacent(x, y, z), c.Edges(x, y, z), c.Corners(x, y, z))
 	return cells
 }
 

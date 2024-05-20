@@ -104,15 +104,15 @@ func (p Pairs[T, U]) Vals() []U {
 
 func Fill[T any](x int, def T) []T {
 	a := make([]T, x)
-	for i := 0; i < x; i++ {
-		a[x] = def
+	for i := range x {
+		a[i] = def
 	}
 	return a
 }
 
 func Fill2D[T any](x, y int, def T) [][]T {
 	a := make([][]T, x)
-	for i := 0; i < x; i++ {
+	for i := range x {
 		b := make([]T, y)
 		for j := 0; j < y; j++ {
 			b[j] = def
