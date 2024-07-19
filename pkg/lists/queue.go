@@ -12,6 +12,10 @@ func (q *Queue[T]) Pop() T {
 	return item
 }
 
+func (q *Queue[T]) Peek() T {
+	return (*q)[0]
+}
+
 func (q *Queue[T]) Seq(yield func(T) bool) {
 	for len(*q) > 0 {
 		item := q.Pop()

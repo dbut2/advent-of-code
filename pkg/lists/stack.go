@@ -12,6 +12,10 @@ func (s *Stack[T]) Pop() T {
 	return item
 }
 
+func (s *Stack[T]) Peek() T {
+	return (*s)[len(*s)-1]
+}
+
 func (s *Stack[T]) Seq(yield func(T) bool) {
 	for len(*s) > 0 {
 		item := s.Pop()

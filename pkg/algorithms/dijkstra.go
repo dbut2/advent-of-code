@@ -5,6 +5,8 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/sets"
 )
 
+// Dijkstra is an implementation of Dijkstra's algorithm for finding the shortest path between two nodes in a graph.
+// https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 func Dijkstra[T comparable](g Graph[T], a, b T) int {
 	nodeSet, edgeMap := g.optimal()
 
