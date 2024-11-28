@@ -5,7 +5,7 @@ Advent of Code solutions for some of 2019-2023, mostly in Go
 
 Some solutions may have a v2 solution if I've attempted a more efficient/effective solution
 
-All Go solutions should be runnable through just go running the **file**. I make no guarantees for older solutions being runnable as I update my packages frequently, but generally the most recent solutions will work.
+All Go solutions should be runnable through just `go run`ning the **file**. I make no guarantees for older solutions being runnable as I update my packages frequently, but generally the most recent solutions will work.
 
 <!--- advent_readme_stars table --->
 ## 2023 Results
