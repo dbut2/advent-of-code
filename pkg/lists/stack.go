@@ -2,6 +2,10 @@ package lists
 
 type Stack[T any] []T
 
+func NewStack[T any]() Stack[T] {
+	return Stack[T]{}
+}
+
 func (s *Stack[T]) Push(items ...T) {
 	*s = append(*s, items...)
 }
@@ -18,8 +22,7 @@ func (s *Stack[T]) Peek() T {
 
 func (s *Stack[T]) Seq(yield func(T) bool) {
 	for len(*s) > 0 {
-		item := s.Pop()
-		if !yield(item) {
+		if !yield(s.Pop()) {
 			return
 		}
 	}

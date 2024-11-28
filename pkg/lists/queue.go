@@ -1,25 +1,28 @@
 package lists
 
-type Queue[T any] []T
+type Queue[T any] Linked[T]
+
+func NewQueue[T any]() Queue[T] {
+	return Queue[T](NewLinked[T]())
+}
 
 func (q *Queue[T]) Push(items ...T) {
-	*q = append(*q, items...)
+	for _, item := range items {
+		(*Linked[T])(q).Append(item)
+	}
 }
 
 func (q *Queue[T]) Pop() T {
-	item := (*q)[0]
-	*q = (*q)[1:]
-	return item
+	return (*Linked[T])(q).TakeFirst()
 }
 
 func (q *Queue[T]) Peek() T {
-	return (*q)[0]
+	return (*Linked[T])(q).first.next.value
 }
 
 func (q *Queue[T]) Seq(yield func(T) bool) {
-	for len(*q) > 0 {
-		item := q.Pop()
-		if !yield(item) {
+	for !(*Linked[T])(q).Empty() {
+		if !yield(q.Pop()) {
 			return
 		}
 	}
