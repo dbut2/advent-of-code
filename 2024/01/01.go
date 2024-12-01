@@ -7,32 +7,14 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/strings"
-	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
-
-func main() {
-	h := harness.New(solve, input, tests)
-	h.Solve()
-}
-
-func solve(input string) int {
-	s := utils.ParseInput(input)
-
-	var left []int
-	var right []int
-
-	for j, line := range s {
-		_, _ = j, line
-
-		pair := strings.Ints(line)
-		left = append(left, pair[0])
-		right = append(right, pair[1])
+func solve(input []string) int {
+	var left, right []int
+	for _, line := range input {
+		ints := strings.Ints(line)
+		left = append(left, ints[0])
+		right = append(right, ints[1])
 	}
 
 	slices.Sort(left)
@@ -44,3 +26,14 @@ func solve(input string) int {
 	}
 	return c
 }
+
+func main() {
+	h := harness.New(solve, input, tests, harness.SplitNewlines())
+	h.Run()
+}
+
+//go:embed input.txt
+var input string
+
+//go:embed test*.txt
+var tests embed.FS

@@ -6,34 +6,56 @@ import (
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-type Harness[T comparable] struct {
-	solve func(string) T
-	input string
-	test  test.Tester[T]
+type PreProcessor[T any] func(string) T
+
+func Nothing() PreProcessor[string] {
+	return func(s string) string {
+		return s
+	}
 }
 
-func New[T comparable](solve func(string) T, input string, tests embed.FS) *Harness[T] {
-	h := Harness[T]{
-		solve: solve,
-		input: input,
+func SplitSequence(seq string) PreProcessor[[]string] {
+	return func(s string) []string {
+		return utils.ParseInput(s, seq)
 	}
-	h.test = test.Register(tests, h.solve)
+}
+
+func SplitNewlines() PreProcessor[[]string] {
+	return SplitSequence("\n")
+}
+
+type Harness[T any, U comparable] struct {
+	preProcessor PreProcessor[T]
+	run          func(string) U
+	input        string
+	Tester       test.Tester[U]
+}
+
+func New[T any, U comparable](solve func(T) U, input string, tests embed.FS, preProcessor PreProcessor[T]) *Harness[T, U] {
+	run := func(s string) U {
+		return solve(preProcessor(s))
+	}
+
+	h := Harness[T, U]{
+		preProcessor: preProcessor,
+		run:          run,
+		input:        input,
+	}
+
+	h.Tester = test.Register(tests, run)
+
 	return &h
 }
 
-func (h *Harness[T]) Expect(n int, value T) {
-	h.test.Expect(n, value)
-	fmt.Printf("Test %d passed\n", n)
+func (h *Harness[T, U]) Run() {
+	fmt.Println(h.run(h.input))
 }
 
-func (h *Harness[T]) Solve() {
-	fmt.Println(h.solve(h.input))
-}
-
-func (h *Harness[T]) Benchmark(cond benchmark.Condition) {
+func (h *Harness[T, U]) Benchmark(cond benchmark.Condition) {
 	benchmark.Run(func() {
-		h.solve(h.input)
+		h.run(h.input)
 	}, cond)
 }
