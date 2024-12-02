@@ -4,17 +4,16 @@ import (
 	"embed"
 	"slices"
 
+	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/math"
-	"github.com/dbut2/advent-of-code/pkg/strings"
 )
 
-func solve(input []string) int {
+func solve(input [][]int) int {
 	var left, right []int
 	for _, line := range input {
-		ints := strings.Ints(line)
-		left = append(left, ints[0])
-		right = append(right, ints[1])
+		left = append(left, line[0])
+		right = append(right, line[1])
 	}
 
 	slices.Sort(left)
@@ -28,7 +27,8 @@ func solve(input []string) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlines())
+	h := harness.New(solve, input, tests, harness.SplitNewlinesWithInts())
+	h.Benchmark(benchmark.Count(1000))
 	h.Run()
 }
 

@@ -4,15 +4,13 @@ import (
 	"embed"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
-	"github.com/dbut2/advent-of-code/pkg/strings"
 )
 
-func solve(input []string) int {
+func solve(input [][]int) int {
 	var left, right []int
 	for _, line := range input {
-		pair := strings.Ints(line)
-		left = append(left, pair[0])
-		right = append(right, pair[1])
+		left = append(left, line[0])
+		right = append(right, line[1])
 	}
 
 	rCount := make(map[int]int)
@@ -28,7 +26,7 @@ func solve(input []string) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlines())
+	h := harness.New(solve, input, tests, harness.SplitNewlinesWithInts())
 	h.Tester.Expect(1, 31)
 	h.Run()
 }

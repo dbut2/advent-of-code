@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
+	"github.com/dbut2/advent-of-code/pkg/lists"
+	"github.com/dbut2/advent-of-code/pkg/strings"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
@@ -25,6 +27,14 @@ func SplitSequence(seq string) PreProcessor[[]string] {
 
 func SplitNewlines() PreProcessor[[]string] {
 	return SplitSequence("\n")
+}
+
+func SplitNewlinesWithInts() PreProcessor[[][]int] {
+	return func(s string) [][]int {
+		return lists.Map(SplitNewlines()(s), func(l string) []int {
+			return strings.Ints(l)
+		})
+	}
 }
 
 type Harness[T any, U comparable] struct {

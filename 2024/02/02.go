@@ -6,19 +6,11 @@ import (
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/math"
-	"github.com/dbut2/advent-of-code/pkg/strings"
 )
 
-func solve(input []string) int {
+func solve(input [][]int) int {
 	safeCount := 0
-	for _, line := range input {
-		ints := strings.Ints(line)
-
-		if isSafe(ints) {
-			safeCount++
-			continue
-		}
-
+	for _, ints := range input {
 		// brute force removing a single element for each line
 		for i := range ints {
 			if isSafe(slices.Concat(ints[:i], ints[i+1:])) {
@@ -33,26 +25,22 @@ func solve(input []string) int {
 
 func isSafe(ints []int) bool {
 	increasing := ints[1] > ints[0]
-	isSafe := true
 	for i := 1; i < len(ints); i++ {
 		if ints[i] == ints[i-1] {
-			isSafe = false
-			break
+			return false
 		}
 		if increasing != (ints[i] > ints[i-1]) {
-			isSafe = false
-			break
+			return false
 		}
 		if math.Abs(ints[i]-ints[i-1]) > 3 {
-			isSafe = false
-			break
+			return false
 		}
 	}
-	return isSafe
+	return true
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlines())
+	h := harness.New(solve, input, tests, harness.SplitNewlinesWithInts())
 	h.Tester.Expect(1, 4)
 	h.Run()
 }
