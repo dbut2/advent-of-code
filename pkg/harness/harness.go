@@ -6,6 +6,7 @@ import (
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/lists"
+	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/strings"
 	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
@@ -37,6 +38,12 @@ func SplitNewlinesWithInts() PreProcessor[[][]int] {
 	}
 }
 
+func Grid() PreProcessor[space.Grid[byte]] {
+	return func(s string) space.Grid[byte] {
+		return space.NewGridFromInput(SplitNewlines()(s))
+	}
+}
+
 type Harness[T any, U comparable] struct {
 	preProcessor PreProcessor[T]
 	run          func(string) U
@@ -44,7 +51,23 @@ type Harness[T any, U comparable] struct {
 	Tester       test.Tester[U]
 }
 
-func New[T any, U comparable](solve func(T) U, input string, tests embed.FS, preProcessor PreProcessor[T]) *Harness[T, U] {
+func New[T any, U comparable](solve func(T) U, input string, tests embed.FS) *Harness[T, U] {
+	// a PreProcessor will process the raw input string and return a type T as defined by the solve func
+	var anyPreProcessor any
+	switch any(*new(T)).(type) {
+	case string:
+		anyPreProcessor = Nothing()
+	case []string:
+		anyPreProcessor = SplitNewlines()
+	case [][]int:
+		anyPreProcessor = SplitNewlinesWithInts()
+	case []space.Grid[byte]:
+		anyPreProcessor = Grid()
+	default:
+		panic("no supported preprocessor for type")
+	}
+	preProcessor := anyPreProcessor.(PreProcessor[T])
+
 	run := func(s string) U {
 		return solve(preProcessor(s))
 	}

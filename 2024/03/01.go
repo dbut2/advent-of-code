@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	_ "embed"
 	"regexp"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
@@ -21,7 +22,7 @@ func solve(input string) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.Nothing())
+	h := harness.New(solve, input, tests)
 	h.Tester.Expect(1, 161)
 	h.Run()
 }

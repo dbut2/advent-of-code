@@ -31,7 +31,7 @@ func solve(input string) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.Nothing())
+	h := harness.New(solve, input, tests)
 	h.Tester.Expect(2, 48)
 	h.Run()
 }

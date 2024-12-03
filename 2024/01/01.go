@@ -4,7 +4,6 @@ import (
 	"embed"
 	"slices"
 
-	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/math"
 )
@@ -27,8 +26,7 @@ func solve(input [][]int) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlinesWithInts())
-	h.Benchmark(benchmark.Count(1000))
+	h := harness.New(solve, input, tests)
 	h.Run()
 }
 

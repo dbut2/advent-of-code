@@ -26,7 +26,7 @@ func solve(input [][]int) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlinesWithInts())
+	h := harness.New(solve, input, tests)
 	h.Tester.Expect(1, 31)
 	h.Run()
 }
