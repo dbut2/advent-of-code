@@ -12,15 +12,12 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 525152)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 525152)
 	h.Run()
 }
 
@@ -35,7 +32,7 @@ func solve(input string) int {
 		goals := strings.Split(line, " ")[1]
 
 		longerSprings := strings.Repeat("?"+springs, 5)[1:]
-		longerGoalNumbers := sti.Stis(strings.Split(strings.Repeat(","+goals, 5)[1:], ","))
+		longerGoalNumbers := sti.Ints(strings.Split(strings.Repeat(","+goals, 5)[1:], ","))
 
 		go func() {
 			total.Add(int64(validSets(longerSprings, longerGoalNumbers)))

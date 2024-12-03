@@ -3,28 +3,21 @@ package main
 import (
 	"embed"
 	_ "embed"
-	"fmt"
-	"github.com/dbut2/advent-of-code/pkg/benchmark"
-	"github.com/dbut2/advent-of-code/pkg/sti"
 	"strings"
 
-	"github.com/dbut2/advent-of-code/pkg/test"
+	"github.com/dbut2/advent-of-code/pkg/harness"
+	"github.com/dbut2/advent-of-code/pkg/sti"
+
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(1, 8)
-	fmt.Println(solve(input))
-	benchmark.Run(func() {
-		solve(input)
-	}, benchmark.Count(1000))
+	h := harness.New(solve, inputs)
+	h.Expect(1, 8)
+	h.Run()
 }
 
 func solve(input string) int {
@@ -41,7 +34,7 @@ func solve(input string) int {
 			cubes := strings.Split(roll, ", ")
 			for _, cube := range cubes {
 				cc := strings.Split(cube, " ")
-				count := sti.Sti(cc[0])
+				count := sti.Int(cc[0])
 				color := cc[1]
 
 				lastMax, _ := maxCubeCounts[color]

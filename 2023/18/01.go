@@ -11,15 +11,12 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 62)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 62)
 	h.Run()
 }
 
@@ -33,7 +30,7 @@ func solve(input string) int {
 	for _, line := range s {
 		splits := strings.Split(line, " ")
 		direction := splits[0]
-		amount := sti.Sti(splits[1])
+		amount := sti.Int(splits[1])
 		switch direction {
 		case "U":
 			coord[1] += amount

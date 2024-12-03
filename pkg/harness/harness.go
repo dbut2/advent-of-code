@@ -8,29 +8,68 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/lists"
 	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/strings"
-	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
+// Harness manages running each days' challenge code, including parsing the
+// input before calling solve, and managing test expectations from examples.
+type Harness[T any, U comparable] struct {
+	preProcessor PreProcessor[T]
+	solve        func(T) U
+	inputs       embed.FS
+}
+
+// HarnessOpt modifies the Harness when initialising.
+type HarnessOpt[T any, U comparable] func(harness *Harness[T, U])
+
+// WithPreProcessor explicitly sets the PreProcessor to be used.
+func WithPreProcessor[T any, U comparable](preProcessor PreProcessor[T]) HarnessOpt[T, U] {
+	return func(h *Harness[T, U]) {
+		h.preProcessor = preProcessor
+	}
+}
+
+// New returns a new Harness. At minimum a solve function and some inputs are
+// required.
+func New[T any, U comparable](solve func(T) U, inputs embed.FS, opts ...HarnessOpt[T, U]) *Harness[T, U] {
+	h := Harness[T, U]{
+		preProcessor: defaultPreProcessor[T](),
+		solve:        solve,
+		inputs:       inputs,
+	}
+
+	for _, opt := range opts {
+		opt(&h)
+	}
+
+	return &h
+}
+
+// PreProcessor is a function that process the input data before passing to the
+// solve function.
 type PreProcessor[T any] func(string) T
 
+// Nothing passes the input string directly to solve
 func Nothing() PreProcessor[string] {
 	return func(s string) string {
 		return s
 	}
 }
 
+// SplitSequence trims and splits the input on the seq string sequence
 func SplitSequence(seq string) PreProcessor[[]string] {
 	return func(s string) []string {
 		return utils.ParseInput(s, seq)
 	}
 }
 
+// SplitNewlines is the default processing that splits the input on newlines
 func SplitNewlines() PreProcessor[[]string] {
 	return SplitSequence("\n")
 }
 
-func SplitNewlinesWithInts() PreProcessor[[][]int] {
+// Ints process the input to a slice of ints for each line
+func Ints() PreProcessor[[][]int] {
 	return func(s string) [][]int {
 		return lists.Map(SplitNewlines()(s), func(l string) []int {
 			return strings.Ints(l)
@@ -38,57 +77,65 @@ func SplitNewlinesWithInts() PreProcessor[[][]int] {
 	}
 }
 
+// Grid processes the input as a grid of bytes
 func Grid() PreProcessor[space.Grid[byte]] {
 	return func(s string) space.Grid[byte] {
 		return space.NewGridFromInput(SplitNewlines()(s))
 	}
 }
 
-type Harness[T any, U comparable] struct {
-	preProcessor PreProcessor[T]
-	run          func(string) U
-	input        string
-	Tester       test.Tester[U]
-}
-
-func New[T any, U comparable](solve func(T) U, input string, tests embed.FS) *Harness[T, U] {
-	// a PreProcessor will process the raw input string and return a type T as defined by the solve func
-	var anyPreProcessor any
+func defaultPreProcessor[T any]() PreProcessor[T] {
 	switch any(*new(T)).(type) {
 	case string:
-		anyPreProcessor = Nothing()
+		return any(Nothing()).(PreProcessor[T])
 	case []string:
-		anyPreProcessor = SplitNewlines()
+		return any(SplitNewlines()).(PreProcessor[T])
 	case [][]int:
-		anyPreProcessor = SplitNewlinesWithInts()
+		return any(Ints()).(PreProcessor[T])
 	case []space.Grid[byte]:
-		anyPreProcessor = Grid()
+		return any(Grid()).(PreProcessor[T])
 	default:
 		panic("no supported preprocessor for type")
 	}
-	preProcessor := anyPreProcessor.(PreProcessor[T])
-
-	run := func(s string) U {
-		return solve(preProcessor(s))
-	}
-
-	h := Harness[T, U]{
-		preProcessor: preProcessor,
-		run:          run,
-		input:        input,
-	}
-
-	h.Tester = test.Register(tests, run)
-
-	return &h
 }
 
+func (h *Harness[T, U]) run(s string) U {
+	return h.solve(h.preProcessor(s))
+}
+
+// Run will execute the harness with the main input.
 func (h *Harness[T, U]) Run() {
-	fmt.Println(h.run(h.input))
+	fmt.Println(h.run(h.getInput()))
 }
 
+func (h *Harness[T, U]) readInput(s string) string {
+	input, err := h.inputs.ReadFile(fmt.Sprintf("%s.txt", s))
+	if err != nil {
+		panic(err.Error())
+	}
+	return string(input)
+}
+
+func (h *Harness[T, U]) getInput() string {
+	return h.readInput("input")
+}
+
+func (h *Harness[T, U]) getTestInput(n int) string {
+	return h.readInput(fmt.Sprintf("test%d", n))
+}
+
+// Expect will set a required assertion on the output of solve for a test input.
+func (h *Harness[T, U]) Expect(n int, expected U) {
+	input := h.getTestInput(n)
+	out := h.run(input)
+	if out != expected {
+		panic(fmt.Sprintf("test failed!\n expected: %v\ngot: %v\n", expected, out))
+	}
+}
+
+// Benchmark is a utility to run a benchmark on solve using the main input.
 func (h *Harness[T, U]) Benchmark(cond benchmark.Condition) {
 	benchmark.Run(func() {
-		h.run(h.input)
+		h.run(h.getInput())
 	}, cond)
 }

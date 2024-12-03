@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	_ "embed"
 	"regexp"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
@@ -15,20 +14,17 @@ func solve(input string) int {
 
 	total := 0
 	for _, match := range matches {
-		total += sti.Sti(match[1]) * sti.Sti(match[2])
+		total += sti.Int(match[1]) * sti.Int(match[2])
 	}
 
 	return total
 }
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 161)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 161)
 	h.Run()
 }
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS

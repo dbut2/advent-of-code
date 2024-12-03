@@ -14,13 +14,10 @@ func solve(input []string) int {
 }
 
 func main() {
-	h := harness.New(solve, input, tests, harness.SplitNewlines())
-	h.Tester.Expect(1, 0)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 0)
 	h.Run()
 }
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS

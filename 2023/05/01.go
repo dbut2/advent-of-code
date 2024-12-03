@@ -2,25 +2,21 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"strings"
 
+	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sti"
-	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(1, 35)
-	fmt.Println(solve(input))
+	h := harness.New(solve, inputs)
+	h.Expect(1, 35)
+	h.Run()
 }
 
 func solve(input string) int {
@@ -41,7 +37,7 @@ func solve(input string) int {
 
 		if strings.Contains(line, "seeds: ") {
 			line = strings.ReplaceAll(line, "seeds: ", "")
-			seeds = sti.Stis(strings.Split(line, " "))
+			seeds = sti.Ints(strings.Split(line, " "))
 			continue
 		}
 
@@ -53,7 +49,7 @@ func solve(input string) int {
 			continue
 		}
 
-		values := sti.Stis(strings.Split(line, " "))
+		values := sti.Ints(strings.Split(line, " "))
 		currentMapping = append(currentMapping, submapping{
 			source: values[1],
 			size:   values[2],

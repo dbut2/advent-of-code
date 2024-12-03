@@ -3,10 +3,11 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"strings"
+
 	"github.com/dbut2/advent-of-code/pkg/math"
 	"github.com/dbut2/advent-of-code/pkg/sti"
 	"github.com/dbut2/advent-of-code/pkg/utils"
-	"strings"
 )
 
 //go:embed input.txt

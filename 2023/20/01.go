@@ -9,15 +9,12 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 32000000)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 32000000)
 	h.Run()
 }
 

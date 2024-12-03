@@ -11,15 +11,12 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 7)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 7)
 	h.Run()
 }
 
@@ -34,9 +31,9 @@ func solve(input string) int {
 		parts := strings.Split(line, "~")
 		for _, part := range parts {
 			split := strings.Split(part, ",")
-			a = max(a, sti.Sti(split[0]))
-			b = max(b, sti.Sti(split[1]))
-			c = max(c, sti.Sti(split[2]))
+			a = max(a, sti.Int(split[0]))
+			b = max(b, sti.Int(split[1]))
+			c = max(c, sti.Int(split[2]))
 		}
 	}
 
@@ -58,9 +55,9 @@ func solve(input string) int {
 		parts := strings.Split(line, "~")
 		for i, part := range parts {
 			split := strings.Split(part, ",")
-			coords[0][i] = sti.Sti(split[0])
-			coords[1][i] = sti.Sti(split[1])
-			coords[2][i] = sti.Sti(split[2])
+			coords[0][i] = sti.Int(split[0])
+			coords[1][i] = sti.Int(split[1])
+			coords[2][i] = sti.Int(split[2])
 		}
 
 		for x := coords[0][0]; x <= coords[0][1]; x++ {

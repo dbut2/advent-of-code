@@ -3,24 +3,20 @@ package main
 import (
 	"embed"
 	_ "embed"
-	"fmt"
 
+	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/sets"
 	"github.com/dbut2/advent-of-code/pkg/space"
-	"github.com/dbut2/advent-of-code/pkg/test"
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	t := test.Register(tests, solve)
-	t.Expect(2, 467835)
-	fmt.Println(solve(input))
+	h := harness.New(solve, inputs)
+	h.Expect(2, 467835)
+	h.Run()
 }
 
 func solve(input string) int {

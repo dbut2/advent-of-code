@@ -96,7 +96,7 @@ func SumMapIf[T comparable](s map[T]int, predicate func(T) bool) int {
 
 func Pow[N Number, M Int](x N, y M) N {
 	if y < 0 {
-		return 1 / Pow(x, -y)
+		return 1 / Pow[N, M](x, -y)
 	}
 
 	result := N(1)

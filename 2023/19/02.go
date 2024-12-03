@@ -11,15 +11,12 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
-//go:embed input.txt
-var input string
-
-//go:embed test*.txt
-var tests embed.FS
+//go:embed *.txt
+var inputs embed.FS
 
 func main() {
-	h := harness.New(solve, input, tests)
-	h.Tester.Expect(1, 167409079868000)
+	h := harness.New(solve, inputs)
+	h.Expect(1, 167409079868000)
 	h.Run()
 }
 
@@ -59,7 +56,7 @@ func solve(input string) int {
 				r := Rule{
 					Category: string(partSplits[0][0]),
 					Larger:   partSplits[0][1] == '>',
-					Amount:   sti.Sti(partSplits[0][2:]),
+					Amount:   sti.Int(partSplits[0][2:]),
 					Accepted: partSplits[1] == "A",
 				}
 				if len(partSplits[1]) > 1 {

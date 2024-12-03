@@ -22,7 +22,7 @@ func main() {
 		switch i.d {
 		case forward:
 			h += i.n
-			d += i.n*a
+			d += i.n * a
 		case up:
 			a -= i.n
 		case down:

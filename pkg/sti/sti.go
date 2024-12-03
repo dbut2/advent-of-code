@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Sti(s string) int {
+func Int(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		panic(err.Error())
@@ -13,18 +13,18 @@ func Sti(s string) int {
 	return i
 }
 
-func Stis(s []string) []int {
+func Ints(s []string) []int {
 	ints := make([]int, len(s))
 	for i, str := range s {
-		ints[i] = Sti(str)
+		ints[i] = Int(str)
 	}
 	return ints
 }
 
-func Stiss(s []string, sep string) [][]int {
+func Intss(s []string, sep string) [][]int {
 	ints := make([][]int, len(s))
 	for i, line := range s {
-		ints[i] = Stis(strings.Split(line, sep))
+		ints[i] = Ints(strings.Split(line, sep))
 	}
 	return ints
 }
