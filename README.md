@@ -1,9 +1,7 @@
 # aoc
 ### Advent of Code
 
-Advent of Code solutions for some of 2019-2023, mostly in Go
-
-Some solutions may have a v2 solution if I've attempted a more efficient/effective solution
+Advent of Code solutions for some of 2020-2024, mostly in Go
 
 All Go solutions should be runnable through just `go run`ning the **file**. I make no guarantees for older solutions being runnable as I update my packages frequently, but generally the most recent solutions will work.
 
