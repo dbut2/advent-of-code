@@ -19,7 +19,7 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Solve()
+	h.Run()
 }
 
 type Module interface {
@@ -188,7 +188,7 @@ func solve(input string) int {
 		from, to int
 		high     bool
 	}
-	pulses := lists.Queue[pulse]{}
+	pulses := lists.NewQueue[pulse]()
 	emit := func(from int, to []int, high bool) {
 		for _, o := range to {
 			pulses.Push(pulse{
@@ -230,9 +230,7 @@ func solve(input string) int {
 			high: false,
 		})
 
-		for len(pulses) > 0 {
-			p := pulses.Pop()
-
+		for p := range pulses.Seq {
 			if p.to == rx {
 				continue
 			}

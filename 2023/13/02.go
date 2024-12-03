@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+
 	"github.com/dbut2/advent-of-code/pkg/grid"
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/utils"
@@ -15,8 +16,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(2, 400)
-	h.Solve()
+	h.Tester.Expect(2, 400)
+	h.Run()
 }
 
 func solve(input string) int {

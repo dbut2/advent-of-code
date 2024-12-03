@@ -17,8 +17,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 32000000)
-	h.Solve()
+	h.Tester.Expect(1, 32000000)
+	h.Run()
 }
 
 type Pulse struct {
@@ -158,7 +158,7 @@ func solve(input string) int {
 	low := 0
 	high := 0
 
-	pulses := lists.Queue[Pulse]{}
+	pulses := lists.NewQueue[Pulse]()
 
 	for i := 0; i < 1000; i++ {
 		pulses.Push(Pulse{
@@ -167,9 +167,7 @@ func solve(input string) int {
 			high: false,
 		})
 
-		for len(pulses) > 0 {
-			p := pulses.Pop()
-
+		for p := range pulses.Seq {
 			if p.high {
 				high++
 			} else {

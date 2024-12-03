@@ -19,8 +19,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 154)
-	h.Solve()
+	h.Tester.Expect(1, 154)
+	h.Run()
 }
 
 func solve(input string) int {
@@ -45,16 +45,14 @@ func solve(input string) int {
 		thisCell space.Cell
 		length   int
 	}
-	current := lists.Queue[job]{}
+	current := lists.NewQueue[job]()
 	current.Push(job{
 		lastNode: start,
 		lastCell: start,
 		thisCell: start.Move(space.Down),
 		length:   1,
 	})
-	for len(current) > 0 {
-		j := current.Pop()
-
+	for j := range current.Seq {
 		// dont re-traverse a path
 		if traversed.Contains([2]space.Cell{j.lastCell, j.thisCell}) {
 			continue

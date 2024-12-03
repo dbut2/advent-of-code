@@ -21,4 +21,10 @@ jobs:
 
       - name: Build all Go files
         run: |
+          find ./2023 -name "*.go" -exec go build {} \;
           find ./2024 -name "*.go" -exec go build {} \;
+
+      - name: Run all Go files
+        run: |
+          find ./2023 -name "*.go" -exec go run {} \;
+          find ./2024 -name "*.go" -exec go run {} \;

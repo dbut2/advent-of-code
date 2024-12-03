@@ -18,9 +18,9 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 94)
-	h.Expect(2, 71)
-	h.Solve()
+	h.Tester.Expect(1, 94)
+	h.Tester.Expect(2, 71)
+	h.Run()
 }
 
 func solve(input string) int {

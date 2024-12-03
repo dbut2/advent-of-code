@@ -19,8 +19,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(2, 6)
-	h.Solve()
+	h.Tester.Expect(2, 6)
+	h.Run()
 }
 
 type node struct {

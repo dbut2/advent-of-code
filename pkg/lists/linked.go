@@ -5,12 +5,14 @@ type Linked[T any] struct {
 }
 
 func NewLinked[T any]() Linked[T] {
-	n := &llnode[T]{}
-	return Linked[T]{first: n, last: n}
+	first := &llnode[T]{}
+	last := &llnode[T]{}
+	first.next = last
+	return Linked[T]{first: first, last: last}
 }
 
 func (l *Linked[T]) Empty() bool {
-	return l.first.next == nil
+	return l.first.next == l.last
 }
 
 func (l *Linked[T]) Append(v T) {

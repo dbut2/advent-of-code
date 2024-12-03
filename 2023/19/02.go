@@ -19,8 +19,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 167409079868000)
-	h.Solve()
+	h.Tester.Expect(1, 167409079868000)
+	h.Run()
 }
 
 type Workflow struct {
@@ -89,7 +89,7 @@ func solve(input string) int {
 		}
 	}
 
-	queue := lists.Queue[job]{}
+	queue := lists.NewQueue[job]()
 	queue.Push(job{
 		ranges: map[string][2]int{
 			"x": {1, 4000},
@@ -100,9 +100,7 @@ func solve(input string) int {
 		rule: "in",
 	})
 
-	for len(queue) > 0 {
-		item := queue.Pop()
-
+	for item := range queue.Seq {
 		w := workflows[item.rule]
 
 		for _, rule := range w.Rules {

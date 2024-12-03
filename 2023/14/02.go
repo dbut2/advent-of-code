@@ -16,8 +16,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 64)
-	h.Solve()
+	h.Tester.Expect(1, 64)
+	h.Run()
 }
 
 type rock uint8

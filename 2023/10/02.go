@@ -19,8 +19,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(2, 10)
-	h.Solve()
+	h.Tester.Expect(2, 10)
+	h.Run()
 }
 
 const (
@@ -83,11 +83,10 @@ func solve(input string) int {
 
 	seen := sets.SetOf(start)
 	loop := []space.Cell{start}
-	queue := lists.Queue[space.Cell]{start.Move(connectionDirections[*grid.Get(start)][0])}
+	queue := lists.NewQueue[space.Cell]()
+	queue.Push(start.Move(connectionDirections[*grid.Get(start)][0]))
 
-	for len(queue) > 0 {
-		cell := queue.Pop()
-
+	for cell := range queue.Seq {
 		if seen.Contains(cell) {
 			continue
 		}

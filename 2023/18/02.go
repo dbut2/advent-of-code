@@ -18,8 +18,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 952408144115)
-	h.Solve()
+	h.Tester.Expect(1, 952408144115)
+	h.Run()
 }
 
 func hexToDec(hex string) int {

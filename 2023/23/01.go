@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 
 	"github.com/dbut2/advent-of-code/pkg/graphs"
 	"github.com/dbut2/advent-of-code/pkg/harness"
@@ -19,8 +20,8 @@ var tests embed.FS
 
 func main() {
 	h := harness.New(solve, input, tests)
-	h.Expect(1, 94)
-	h.Solve()
+	h.Tester.Expect(1, 94)
+	h.Run()
 }
 
 func solve(input string) int {
@@ -45,16 +46,14 @@ func solve(input string) int {
 		thisCell space.Cell
 		length   int
 	}
-	current := lists.Queue[job]{}
+	current := lists.NewQueue[job]()
 	current.Push(job{
 		lastNode: start,
 		lastCell: start,
 		thisCell: start.Move(space.Down),
 		length:   1,
 	})
-	for len(current) > 0 {
-		j := current.Pop()
-
+	for j := range current.Seq {
 		// dont re-traverse a path
 		if traversed.Contains([2]space.Cell{j.lastCell, j.thisCell}) {
 			continue
@@ -121,6 +120,8 @@ func solve(input string) int {
 				length:   j.length + 1,
 			})
 		}
+
+		fmt.Print()
 	}
 
 	return graph.Maximise(start, end)
