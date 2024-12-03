@@ -4,6 +4,7 @@
 Advent of Code solutions for some of 2020-2024, mostly in Go
 
 All Go solutions should be runnable through `go run`ning the **file**.
+Most solutions use an embedded file `input.txt` for the input, so make sure this exists if you are attempting to run.
 
 e.g.
 ```shell
