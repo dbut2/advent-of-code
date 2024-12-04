@@ -28,6 +28,7 @@ func (q *Queue[T]) Seq(yield func(T) bool) {
 	}
 }
 
+// TODO: fix the failing cases when using ll
 //type Queue[T any] struct {
 //	linked Linked[T]
 //}

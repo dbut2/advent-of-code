@@ -1,5 +1,6 @@
 package ll
 
+// Deprecated. Use lists.DoublyLinked instead.
 type Double[T any] struct {
 	Val  T
 	Prev *Double[T]

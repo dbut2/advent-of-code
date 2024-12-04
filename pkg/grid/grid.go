@@ -4,6 +4,7 @@ import (
 	"slices"
 )
 
+// Deprecated. Use space.Grid instead.
 type Grid[T any] map[[2]int]*T
 
 func (g Grid[T]) Set(x, y int, cell T) {

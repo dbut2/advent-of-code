@@ -24,15 +24,14 @@ func solve(input [][]int) int {
 }
 
 func isSafe(ints []int) bool {
-	increasing := ints[1] > ints[0]
+	shouldIncrease := ints[1] > ints[0]
 	for i := 1; i < len(ints); i++ {
-		if ints[i] == ints[i-1] {
+		distance := math.Abs(ints[i] - ints[i-1])
+		if distance < 1 || distance > 3 {
 			return false
 		}
-		if increasing != (ints[i] > ints[i-1]) {
-			return false
-		}
-		if math.Abs(ints[i]-ints[i-1]) > 3 {
+		increases := ints[i] > ints[i-1]
+		if shouldIncrease != increases {
 			return false
 		}
 	}
