@@ -92,7 +92,7 @@ func defaultPreProcessor[T any]() PreProcessor[T] {
 		return any(SplitNewlines()).(PreProcessor[T])
 	case [][]int:
 		return any(Ints()).(PreProcessor[T])
-	case []space.Grid[byte]:
+	case space.Grid[byte]:
 		return any(Grid()).(PreProcessor[T])
 	default:
 		panic("no supported preprocessor for type")

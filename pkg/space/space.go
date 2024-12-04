@@ -48,3 +48,6 @@ var (
 	Left  = West
 	Right = East
 )
+
+var Directions = []Direction{Up, Down, Left, Right}
+var Diagonals = []Direction{Up.Add(Left), Up.Add(Right), Down.Add(Right), Down.Add(Left)}
