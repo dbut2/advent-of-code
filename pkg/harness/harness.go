@@ -17,6 +17,7 @@ type Harness[T any, U comparable] struct {
 	preProcessor PreProcessor[T]
 	solve        func(T) U
 	inputs       embed.FS
+	silent       bool
 }
 
 // HarnessOpt modifies the Harness when initialising.
@@ -26,6 +27,12 @@ type HarnessOpt[T any, U comparable] func(harness *Harness[T, U])
 func WithPreProcessor[T any, U comparable](preProcessor PreProcessor[T]) HarnessOpt[T, U] {
 	return func(h *Harness[T, U]) {
 		h.preProcessor = preProcessor
+	}
+}
+
+func WithSilence[T any, U comparable]() HarnessOpt[T, U] {
+	return func(h *Harness[T, U]) {
+		h.silent = true
 	}
 }
 
@@ -122,7 +129,10 @@ func (h *Harness[T, U]) run(s string) U {
 
 // Run will execute the harness with the main input.
 func (h *Harness[T, U]) Run() {
-	fmt.Println(h.run(h.getInput()))
+	out := h.run(h.getInput())
+	if !h.silent {
+		fmt.Println(out)
+	}
 }
 
 func (h *Harness[T, U]) readInput(s string) string {

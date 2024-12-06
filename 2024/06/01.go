@@ -9,10 +9,10 @@ import (
 )
 
 func solve(input space.Grid[byte]) int {
-	cell, _ := input.Find(func(cell space.Cell, b byte) bool { return b == '^' })
+	cell, _ := input.Find(func(_ space.Cell, b byte) bool { return b == '^' })
 	dir := space.Up
 
-	seen := sets.Set[space.Cell]{}
+	seen := make(sets.Set[space.Cell], len(input)*len(input[0]))
 	for {
 		seen.Add(cell)
 

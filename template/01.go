@@ -4,13 +4,12 @@ import (
 	"embed"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
+	"github.com/dbut2/advent-of-code/pkg/lists"
+	"github.com/dbut2/advent-of-code/pkg/space"
 )
 
 func solve(input []string) int {
-	for i, line := range input {
-		_, _ = i, line
-
-	}
+	
 }
 
 func main() {

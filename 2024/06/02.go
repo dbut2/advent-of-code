@@ -8,11 +8,6 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/space"
 )
 
-type pos struct {
-	cell space.Cell
-	dir  space.Direction
-}
-
 func solve(input space.Grid[byte]) int {
 	count := 0
 
@@ -23,10 +18,14 @@ func solve(input space.Grid[byte]) int {
 		}
 		input.Set(c, '#')
 
-		cell, _ := input.Find(func(cell space.Cell, b byte) bool { return b == '^' })
+		cell, _ := input.Find(func(_ space.Cell, b byte) bool { return b == '^' })
 		dir := space.Up
 
-		seen := sets.Set[pos]{}
+		type pos struct {
+			cell space.Cell
+			dir  space.Direction
+		}
+		seen := make(sets.Set[pos], len(input)*len(input[0]))
 		for {
 			p := pos{cell: cell, dir: dir}
 			if seen.Contains(p) {
