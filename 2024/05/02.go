@@ -10,14 +10,13 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/sti"
 )
 
-func solve(input string) int {
-	sections := strings.Split(input, "\n\n")
-	orderingRules, updates := sections[0], sections[1]
+func solve(input [2][]string) int {
+	orderingRules, updates := input[0], input[1]
 
 	// Create a dependancy map of Key depends on []Values
 	dep := make(map[string][]string)
 
-	for _, line := range strings.Split(orderingRules, "\n") {
+	for _, line := range orderingRules {
 		parts := strings.Split(line, "|")
 		depender, dependant := parts[0], parts[1]
 		dep[dependant] = append(dep[dependant], depender)
@@ -25,7 +24,7 @@ func solve(input string) int {
 
 	total := 0
 
-	for _, line := range strings.Split(updates, "\n") {
+	for _, line := range updates {
 		if line == "" {
 			continue
 		}
@@ -44,14 +43,14 @@ func solve(input string) int {
 		}
 
 		if !valid {
-			// I am ashamed of my solution here, but I will post anyway as
-			// documentation of my solution.
+			// I am ashamed of this solution.
 
-			// create a set of all elements in the
+			// Create a set of all elements in the update.
 			lineElements := sets.SetFrom(parts)
 
-			// m is a secondary dependancy map, containing only keys and values
-			// that exist in the current update.
+			// Create secondary dependency map. A copy of the original
+			// dependency map, only including keys and values that exist in the
+			// current update.
 			m := make(map[string][]string)
 			for x, y := range dep {
 				if !lineElements.Contains(x) {
@@ -65,23 +64,23 @@ func solve(input string) int {
 			}
 
 			// While there exists some elements in the dependency map, pull out
-			//the element that has no dependencies remaining, meaning this must
-			//be the next value in our sorted string.
+			// the element that has no dependencies remaining, this must be the
+			// next value in the sequence.
 			var s []string
 			for len(m) > 0 {
 				for _, p := range lineElements.Slice() {
 					if len(m[p]) == 0 {
-						// Add current element to end of slice.
+						// Add element to end of slice.
 						s = append(s, p)
 
-						// Remove current element from dependency map.
+						// Remove references to element.
+						lineElements.Remove(p)
+						delete(m, p)
 						for i := range m {
 							m[i] = slices.DeleteFunc(m[i], func(s string) bool {
 								return s == p
 							})
 						}
-						delete(m, p)
-						lineElements.Remove(p)
 
 						break
 					}

@@ -9,21 +9,20 @@ import (
 	"github.com/dbut2/advent-of-code/pkg/sti"
 )
 
-func solve(input string) int {
-	sections := strings.Split(input, "\n\n")
-	orderingRules, updates := sections[0], sections[1]
+func solve(input [2][]string) int {
+	orderingRules, updates := input[0], input[1]
 
 	// Create a dependancy map of Key depends on []Values
 	dep := make(map[string][]string)
 
-	for _, line := range strings.Split(orderingRules, "\n") {
+	for _, line := range orderingRules {
 		parts := strings.Split(line, "|")
 		depender, dependant := parts[0], parts[1]
 		dep[dependant] = append(dep[dependant], depender)
 	}
 
 	total := 0
-	for _, line := range strings.Split(updates, "\n") {
+	for _, line := range updates {
 		if line == "" {
 			continue
 		}

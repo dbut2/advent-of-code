@@ -3,12 +3,12 @@ package harness
 import (
 	"embed"
 	"fmt"
+	strings2 "strings"
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/lists"
 	"github.com/dbut2/advent-of-code/pkg/space"
 	"github.com/dbut2/advent-of-code/pkg/strings"
-	"github.com/dbut2/advent-of-code/pkg/utils"
 )
 
 // Harness manages running each days' challenge code, including parsing the
@@ -59,7 +59,7 @@ func Nothing() PreProcessor[string] {
 // SplitSequence trims and splits the input on the seq string sequence
 func SplitSequence(seq string) PreProcessor[[]string] {
 	return func(s string) []string {
-		return utils.ParseInput(s, seq)
+		return strings2.Split(strings2.TrimSpace(s), seq)
 	}
 }
 
@@ -84,12 +84,29 @@ func Grid() PreProcessor[space.Grid[byte]] {
 	}
 }
 
+func DoubleSection() PreProcessor[[2]string] {
+	return func(s string) [2]string {
+		return [2]string(SplitSequence("\n\n")(s))
+	}
+}
+
+func DoubleSectionLines() PreProcessor[[2][]string] {
+	return func(s string) [2][]string {
+		parts := DoubleSection()(s)
+		return [2][]string{SplitNewlines()(parts[0]), SplitNewlines()(parts[1])}
+	}
+}
+
 func defaultPreProcessor[T any]() PreProcessor[T] {
 	switch any(*new(T)).(type) {
 	case string:
 		return any(Nothing()).(PreProcessor[T])
 	case []string:
 		return any(SplitNewlines()).(PreProcessor[T])
+	case [2]string:
+		return any(DoubleSection()).(PreProcessor[T])
+	case [2][]string:
+		return any(DoubleSectionLines()).(PreProcessor[T])
 	case [][]int:
 		return any(Ints()).(PreProcessor[T])
 	case space.Grid[byte]:
