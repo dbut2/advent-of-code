@@ -34,11 +34,15 @@ func Coords(cells []Cell) [][2]int {
 
 type Direction [2]int
 
-func (d *Direction) Add(b Direction) Direction {
+func (d Direction) Rotate() Direction {
+	return Direction{-d[1], d[0]}
+}
+
+func (d Direction) Add(b Direction) Direction {
 	return Direction{d[0] + b[0], d[1] + b[1]}
 }
 
-func (d *Direction) Multiply(n int) Direction {
+func (d Direction) Multiply(n int) Direction {
 	return Direction{d[0] * n, d[1] * n}
 }
 
