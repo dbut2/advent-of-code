@@ -1,7 +1,7 @@
 package main
 
 import (
-	"embed"
+	"time"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/sets"
@@ -36,15 +36,8 @@ func solve(input space.Grid[byte]) int {
 	return len(antinodes)
 }
 
-func diff(a, b space.Cell) space.Direction {
-	return space.Direction{a[0] - b[0], a[1] - b[1]}
-}
-
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Expect(1, 14)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS

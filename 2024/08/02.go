@@ -1,7 +1,7 @@
 package main
 
 import (
-	"embed"
+	"time"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/sets"
@@ -43,11 +43,8 @@ func diff(a, b space.Cell) space.Direction {
 }
 
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Expect(1, 34)
 	h.Expect(2, 9)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS

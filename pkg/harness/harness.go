@@ -1,13 +1,19 @@
 package harness
 
 import (
-	"embed"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
+	"runtime"
 	strings2 "strings"
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/lists"
 	"github.com/dbut2/advent-of-code/pkg/space"
+	"github.com/dbut2/advent-of-code/pkg/sti"
 	"github.com/dbut2/advent-of-code/pkg/strings"
 )
 
@@ -16,8 +22,8 @@ import (
 type Harness[T any, U comparable] struct {
 	preProcessor PreProcessor[T]
 	solve        func(T) U
-	inputs       embed.FS
 	silent       bool
+	metadata     metadata
 }
 
 // HarnessOpt modifies the Harness when initialising.
@@ -38,11 +44,11 @@ func WithSilence[T any, U comparable]() HarnessOpt[T, U] {
 
 // New returns a new Harness. At minimum a solve function and some inputs are
 // required.
-func New[T any, U comparable](solve func(T) U, inputs embed.FS, opts ...HarnessOpt[T, U]) *Harness[T, U] {
+func New[T any, U comparable](solve func(T) U, opts ...HarnessOpt[T, U]) *Harness[T, U] {
 	h := Harness[T, U]{
 		preProcessor: defaultPreProcessor[T](),
 		solve:        solve,
-		inputs:       inputs,
+		metadata:     getMetadata(),
 	}
 
 	for _, opt := range opts {
@@ -50,6 +56,26 @@ func New[T any, U comparable](solve func(T) U, inputs embed.FS, opts ...HarnessO
 	}
 
 	return &h
+}
+
+type metadata struct {
+	workdir   string
+	year, day int
+}
+
+func getMetadata() metadata {
+	_, file, _, _ := runtime.Caller(2)
+
+	dir := filepath.Dir(file)
+
+	r := regexp.MustCompile(`(\d{4})/(\d{2})/.+\.go`)
+	parts := r.FindStringSubmatch(file)
+
+	return metadata{
+		workdir: dir,
+		year:    sti.Int(parts[1]),
+		day:     sti.Int(parts[2]),
+	}
 }
 
 // PreProcessor is a function that process the input data before passing to the
@@ -129,15 +155,54 @@ func (h *Harness[T, U]) Run() {
 }
 
 func (h *Harness[T, U]) readInput(s string) string {
-	input, err := h.inputs.ReadFile(fmt.Sprintf("%s.txt", s))
+	data, _ := os.ReadFile(filepath.Join(h.metadata.workdir, fmt.Sprintf("%s.txt", s)))
+	return string(data)
+}
+
+func (h *Harness[T, U]) writeInput(s string, input string) {
+	err := os.WriteFile(filepath.Join(h.metadata.workdir, fmt.Sprintf("%s.txt", s)), []byte(input), 0644)
 	if err != nil {
 		panic(err.Error())
 	}
-	return string(input)
 }
 
 func (h *Harness[T, U]) getInput() string {
-	return h.readInput("input")
+	input := h.readInput("input")
+	if input == "" {
+		input = h.fetchInput()
+		h.writeInput("input", input)
+	}
+	return input
+}
+
+func (h *Harness[T, U]) fetchInput() string {
+	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", h.metadata.year, h.metadata.day)
+	session := os.Getenv("AOC_SESSION")
+	if session == "" {
+		panic("no AOC_SESSION env")
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	req.AddCookie(&http.Cookie{
+		Name:  "session",
+		Value: session,
+	})
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return string(bytes)
 }
 
 func (h *Harness[T, U]) getTestInput(n int) string {

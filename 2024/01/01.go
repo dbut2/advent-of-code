@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"slices"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
@@ -26,9 +25,6 @@ func solve(input [][]int) int {
 }
 
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS

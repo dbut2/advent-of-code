@@ -4,7 +4,7 @@
 Advent of Code solutions for some of 2020-2024, mostly in Go
 
 All Go solutions should be runnable through `go run`ning the **file**.
-Most solutions use an embedded file `input.txt` for the input, so make sure this exists if you are attempting to run.
+For each solution you can either provide your input inside each days solution in `input.txt`, or set your `AOC_SESSION` env var and the input will be fetched for you.
 
 e.g.
 ```shell

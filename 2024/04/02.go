@@ -1,8 +1,6 @@
 package main
 
 import (
-	"embed"
-
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	"github.com/dbut2/advent-of-code/pkg/space"
 )
@@ -38,9 +36,6 @@ func rotate(dirs []space.Direction) []space.Direction {
 }
 
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS

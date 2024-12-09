@@ -1,8 +1,6 @@
 package main
 
 import (
-	"embed"
-
 	"github.com/dbut2/advent-of-code/pkg/harness"
 )
 
@@ -25,10 +23,7 @@ func calc(goal int, running int, nums []int) bool {
 }
 
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Expect(1, 3749)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS

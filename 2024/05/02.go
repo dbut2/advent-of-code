@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"slices"
 	"strings"
 
@@ -95,10 +94,7 @@ func solve(input [2][]string) int {
 }
 
 func main() {
-	h := harness.New(solve, inputs)
+	h := harness.New(solve)
 	h.Expect(1, 123)
 	h.Run()
 }
-
-//go:embed *.txt
-var inputs embed.FS
