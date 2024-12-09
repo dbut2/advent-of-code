@@ -56,13 +56,6 @@ func New[T any, U comparable](solve func(T) U, inputs embed.FS, opts ...HarnessO
 // solve function.
 type PreProcessor[T any] func(string) T
 
-// Nothing passes the input string directly to solve
-func Nothing() PreProcessor[string] {
-	return func(s string) string {
-		return s
-	}
-}
-
 // SplitSequence trims and splits the input on the seq string sequence
 func SplitSequence(seq string) PreProcessor[[]string] {
 	return func(s string) []string {
@@ -107,7 +100,7 @@ func DoubleSectionLines() PreProcessor[[2][]string] {
 func defaultPreProcessor[T any]() PreProcessor[T] {
 	switch any(*new(T)).(type) {
 	case string:
-		return any(Nothing()).(PreProcessor[T])
+		return any(PreProcessor[string](strings2.TrimSpace)).(PreProcessor[T])
 	case []string:
 		return any(SplitNewlines()).(PreProcessor[T])
 	case [2]string:
