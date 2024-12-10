@@ -1,9 +1,11 @@
 package harness
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	url2 "net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -23,6 +25,7 @@ type Harness[T any, U comparable] struct {
 	preProcessor PreProcessor[T]
 	solve        func(T) U
 	silent       bool
+	dontSubmit   bool
 	metadata     metadata
 }
 
@@ -39,6 +42,12 @@ func WithPreProcessor[T any, U comparable](preProcessor PreProcessor[T]) Harness
 func WithSilence[T any, U comparable]() HarnessOpt[T, U] {
 	return func(h *Harness[T, U]) {
 		h.silent = true
+	}
+}
+
+func WithNoSubmit[T any, U comparable]() HarnessOpt[T, U] {
+	return func(h *Harness[T, U]) {
+		h.dontSubmit = true
 	}
 }
 
@@ -59,8 +68,8 @@ func New[T any, U comparable](solve func(T) U, opts ...HarnessOpt[T, U]) *Harnes
 }
 
 type metadata struct {
-	workdir   string
-	year, day int
+	workdir         string
+	year, day, part int
 }
 
 func getMetadata() metadata {
@@ -68,13 +77,14 @@ func getMetadata() metadata {
 
 	dir := filepath.Dir(file)
 
-	r := regexp.MustCompile(`(\d{4})/(\d{2})/.+\.go`)
+	r := regexp.MustCompile(`(\d{4})/(\d{2})/(\d{1})\.go`)
 	parts := r.FindStringSubmatch(file)
 
 	return metadata{
 		workdir: dir,
 		year:    sti.Int(parts[1]),
 		day:     sti.Int(parts[2]),
+		part:    sti.Int(parts[3]),
 	}
 }
 
@@ -152,6 +162,9 @@ func (h *Harness[T, U]) Run() {
 	if !h.silent {
 		fmt.Println(out)
 	}
+	if !h.dontSubmit && !h.hasCompletedToday() {
+		fmt.Println(h.submitAnswer(out))
+	}
 }
 
 func (h *Harness[T, U]) readInput(s string) string {
@@ -209,6 +222,91 @@ func (h *Harness[T, U]) getTestInput(n int) string {
 	return h.readInput(fmt.Sprintf("test%d", n))
 }
 
+func (h *Harness[T, U]) submitAnswer(answer U) string {
+	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/answer", h.metadata.year, h.metadata.day)
+	session := os.Getenv("AOC_SESSION")
+	if session == "" {
+		panic("no AOC_SESSION env")
+	}
+
+	form := url2.Values{
+		"level":  {fmt.Sprintf("%d", h.metadata.part)},
+		"answer": {fmt.Sprintf("%v", answer)},
+	}
+
+	req, err := http.NewRequest("POST", url, strings2.NewReader(form.Encode()))
+	if err != nil {
+		panic(err.Error())
+	}
+	req.AddCookie(&http.Cookie{
+		Name:  "session",
+		Value: session,
+	})
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	r := regexp.MustCompile(`<article><p>(.+)</p></article>`)
+	return r.FindStringSubmatch(string(bytes))[1]
+}
+
+func (h *Harness[T, U]) hasCompletedToday() bool {
+	url := fmt.Sprintf("https://adventofcode.com/%d/leaderboard/private/view/1573050.json", h.metadata.year)
+	session := os.Getenv("AOC_SESSION")
+	if session == "" {
+		panic("no AOC_SESSION env")
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	req.AddCookie(&http.Cookie{
+		Name:  "session",
+		Value: session,
+	})
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var v any
+	err = json.Unmarshal(bytes, &v)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	completions := v.(map[string]any)["members"].(map[string]any)["1573050"].(map[string]any)["completion_day_level"]
+
+	parts, ok := completions.(map[string]any)[fmt.Sprintf("%d", h.metadata.day)]
+	if !ok {
+		return false
+	}
+
+	_, ok = parts.(map[string]any)[fmt.Sprintf("%d", h.metadata.part)]
+	if !ok {
+		return false
+	}
+
+	return ok
+}
+
 // Expect will set a required assertion on the output of solve for a test input.
 func (h *Harness[T, U]) Expect(n int, expected U) {
 	input := h.getTestInput(n)
@@ -220,7 +318,8 @@ func (h *Harness[T, U]) Expect(n int, expected U) {
 
 // Benchmark is a utility to run a benchmark on solve using the main input.
 func (h *Harness[T, U]) Benchmark(cond benchmark.Condition) {
+	input := h.preProcessor(h.getInput())
 	benchmark.Run(func() {
-		h.run(h.getInput())
+		h.solve(input)
 	}, cond)
 }
