@@ -115,6 +115,16 @@ func (g *Grid[T]) Find(f func(Cell, T) bool) (Cell, *T) {
 	return Cell{}, nil
 }
 
+func (g *Grid[T]) FindAll(f func(Cell, T) bool) []Cell {
+	var found []Cell
+	for cell, val := range g.Cells() {
+		if f(cell, *val) {
+			found = append(found, cell)
+		}
+	}
+	return found
+}
+
 func (g *Grid[T]) Cells() map[Cell]*T {
 	cells := make(map[Cell]*T, len(*g)*len((*g)[0]))
 	for i := range *g {
