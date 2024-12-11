@@ -143,6 +143,8 @@ func defaultPreProcessor[T any]() PreProcessor[T] {
 		return any(DoubleSection()).(PreProcessor[T])
 	case [2][]string:
 		return any(DoubleSectionLines()).(PreProcessor[T])
+	case []int:
+		return any(PreProcessor[[]int](strings.Ints)).(PreProcessor[T])
 	case [][]int:
 		return any(Ints()).(PreProcessor[T])
 	case space.Grid[byte]:
