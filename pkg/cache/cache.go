@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"hash/fnv"
 	"reflect"
+	"sync"
 )
 
 type Cache struct {
 	internal map[string]map[uint64]any
+	mu       *sync.RWMutex
 	stats    Stats
 }
 
@@ -21,6 +23,7 @@ type Stats struct {
 func New() *Cache {
 	return &Cache{
 		internal: make(map[string]map[uint64]any),
+		mu:       &sync.RWMutex{},
 	}
 }
 
