@@ -16,21 +16,22 @@ func solve(input space.Grid[byte]) int {
 				val := input.Get(cell)
 				left := input.Get(cell.Move(dir))
 				up := input.Get(cell.Move(dir.Rotate()))
-				leftUp := input.Get(cell.Move(dir).Move(dir.Rotate()))
+				upLeft := input.Get(cell.Move(dir).Move(dir.Rotate()))
 
-				// These combinations of states are what I drew out in pen and
-				// paper. I cannot explain further why.
+				// Count corners
+
+				// Case where cell is at a convex corner, both up and left are not equal
 				if (up == nil || *up != *val) && (left == nil || *left != *val) {
 					perimeter++
 					continue
 				}
-				if up == nil || left == nil {
-					continue
-				}
-				if *val == *up && *val != *left && *val == *leftUp {
+				// Concave corner where left and up are equal but upLeft is not
+				if up != nil && left != nil && *val == *up && *val == *left && *val != *upLeft {
 					perimeter++
 					continue
 				}
+
+				// All other cases of sides or internal cells
 			}
 		}
 		total += perimeter * len(flood)
