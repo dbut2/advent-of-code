@@ -139,6 +139,14 @@ func defaultPreProcessor[T any]() PreProcessor[T] {
 		return any(PreProcessor[string](strings2.TrimSpace)).(PreProcessor[T])
 	case []string:
 		return any(SplitNewlines()).(PreProcessor[T])
+	case [][]string:
+		return any(PreProcessor[[][]string](func(input string) [][]string {
+			var groups [][]string
+			for _, group := range strings2.Split(strings2.TrimSpace(input), "\n\n") {
+				groups = append(groups, strings2.Split(group, "\n"))
+			}
+			return groups
+		})).(PreProcessor[T])
 	case [2]string:
 		return any(DoubleSection()).(PreProcessor[T])
 	case [2][]string:
