@@ -1,6 +1,7 @@
 package space
 
 import (
+	"fmt"
 	"slices"
 )
 
@@ -133,4 +134,13 @@ func (g *Grid[T]) Cells() map[Cell]*T {
 		}
 	}
 	return cells
+}
+
+func (g *Grid[T]) Print(f func(T) string) {
+	for j := range (*g)[0] {
+		for i := range *g {
+			fmt.Print(f((*g)[i][j]))
+		}
+		fmt.Println()
+	}
 }
