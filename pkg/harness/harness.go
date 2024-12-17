@@ -1,6 +1,7 @@
 package harness
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"slices"
 	strings2 "strings"
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
@@ -198,6 +200,49 @@ func (h *Harness[T, U]) getInput() string {
 	return input
 }
 
+func (h *Harness[T, U]) getAnswers() []U {
+	data, _ := os.ReadFile(filepath.Join(h.metadata.workdir, "answers.txt"))
+
+	var answers []U
+	switch any(*new(U)).(type) {
+	case string:
+		for _, line := range bytes.Split(data, []byte("\n")) {
+			answers = append(answers, any(string(line)).(U))
+		}
+	case int:
+		for _, line := range bytes.Split(data, []byte("\n")) {
+			answers = append(answers, any(sti.Int(string(line))).(U))
+		}
+	}
+	return answers
+}
+
+func (h *Harness[T, U]) addAnswer(v U) {
+	answers := h.getAnswers()
+	answers = append(answers, v)
+
+	var data []byte
+	switch any(*new(U)).(type) {
+	case string:
+		for _, a := range answers {
+			data = append(data, []byte(fmt.Sprintf("%v\n", a))...)
+		}
+	case int:
+		for _, a := range answers {
+			data = append(data, []byte(fmt.Sprintf("%d\n", a))...)
+		}
+	}
+
+	err := os.WriteFile(filepath.Join(h.metadata.workdir, "answers.txt"), data, 0644)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func (h *Harness[T, U]) hasAnswered(v U) bool {
+	return slices.Contains(h.getAnswers(), v)
+}
+
 func (h *Harness[T, U]) fetchInput() string {
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", h.metadata.year, h.metadata.day)
 	session := os.Getenv("AOC_SESSION")
@@ -233,6 +278,10 @@ func (h *Harness[T, U]) getTestInput(n int) string {
 }
 
 func (h *Harness[T, U]) submitAnswer(answer U) string {
+	if h.hasAnswered(answer) {
+		panic("already tried")
+	}
+	h.addAnswer(answer)
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/answer", h.metadata.year, h.metadata.day)
 	session := os.Getenv("AOC_SESSION")
 	if session == "" {
