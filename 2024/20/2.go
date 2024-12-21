@@ -35,7 +35,7 @@ func solve(input space.Grid[byte]) int {
 		if *v == '#' {
 			continue
 		}
-		const k = 2
+		const k = 20
 		for dx := -k; dx <= k; dx++ {
 			for dy := -k; dy <= k; dy++ {
 				// For all cells in the surrounding 2k+1 * 2k+1 area, find all
