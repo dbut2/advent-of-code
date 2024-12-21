@@ -1,5 +1,9 @@
 package space
 
+import (
+	"github.com/dbut2/advent-of-code/pkg/math"
+)
+
 type Cell [2]int
 
 type Cells [][2]int
@@ -10,6 +14,10 @@ func (c Cell) Move(d Direction) Cell {
 
 func (c Cell) DirectionTo(b Cell) Direction {
 	return Direction{b[0] - c[0], b[1] - c[1]}
+}
+
+func Manhattan(a, b Cell) int {
+	return math.Abs(a[0]-b[0]) + math.Abs(a[1]-b[1])
 }
 
 func Coord(cell Cell) [2]int {

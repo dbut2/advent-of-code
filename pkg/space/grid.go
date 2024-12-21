@@ -104,16 +104,16 @@ func (g *Grid[T]) Surrounding(c Cell) map[Cell]*T {
 	return cells
 }
 
-func (g *Grid[T]) Find(f func(Cell, T) bool) (Cell, *T) {
+func (g *Grid[T]) Find(f func(T) bool) Cell {
 	for i := range *g {
 		for j, cell := range (*g)[i] {
 			c := Cell{i, j}
-			if f(c, cell) {
-				return c, &(*g)[i][j]
+			if f(cell) {
+				return c
 			}
 		}
 	}
-	return Cell{}, nil
+	return Cell{}
 }
 
 func (g *Grid[T]) FindAll(f func(Cell, T) bool) []Cell {

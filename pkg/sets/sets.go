@@ -1,6 +1,7 @@
 package sets
 
 import (
+	"maps"
 	"sync"
 )
 
@@ -42,12 +43,16 @@ func (s *Set[T]) Contains(v T) bool {
 	return ok && b
 }
 
-func (s *Set[T]) Copy() Set[T] {
-	var c Set[T]
-	for i := range *s {
-		c.Add(i)
+func (s *Set[T]) Clone() Set[T] {
+	return maps.Clone(*s)
+}
+
+func (s *Set[T]) Seq(yield func(T) bool) {
+	for v, _ := range *s {
+		if !yield(v) {
+			return
+		}
 	}
-	return c
 }
 
 type SyncSet[T comparable] struct {
