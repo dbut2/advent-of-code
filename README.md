@@ -52,4 +52,5 @@ The packages found in this repo are free to use or reference. It's recommend to 
 | [Day 19](https://adventofcode.com/2024/day/19) | ⭐ | ⭐ |
 | [Day 20](https://adventofcode.com/2024/day/20) | ⭐ | ⭐ |
 | [Day 21](https://adventofcode.com/2024/day/21) | ⭐ | ⭐ |
+| [Day 22](https://adventofcode.com/2024/day/22) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
