@@ -1,7 +1,8 @@
 name: automerge
 on:
   pull_request:
-  label:
+  pull_request_target:
+    types: [labeled]
 
 permissions:
   contents: write
@@ -10,10 +11,14 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]' || (github.actor == 'dbut2' && contains(github.head_ref, 'automerge'))
+    if: |
+      (github.event_name == ‘pull_request’ && github.actor == ‘dependabot[bot]’) ||
+      (github.event_name == ‘pull_request_target’ &&
+      github.actor == ‘dbut2’ &&
+      github.event.label.name == ‘automerge’)
     steps:
       - name: Enable auto-merge
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge –auto –squash “$PR_URL”
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
