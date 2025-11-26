@@ -19,6 +19,6 @@ jobs:
           leaderboardId: 1573050
           sessionCookie: ${{ secrets.AOC_SESSION }}
 
-      - uses: stefanzweifel/git-auto-commit-action@v6
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Update README stars
