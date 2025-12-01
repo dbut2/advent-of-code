@@ -9,7 +9,7 @@ import (
 // func solve(input []string) int {
 // func solve(input [][]int) int {
 // func solve(input Grid) int {
-	
+
 }
 
 func main() {
@@ -18,3 +18,5 @@ func main() {
 	h.Run()
 }
 
+// hack: resolve unused import for quicker first run
+var _ = Sum[int]
