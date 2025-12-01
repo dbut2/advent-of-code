@@ -1,13 +1,19 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/dbut2/advent-of-code/pkg/harness"
-	. "github.com/dbut2/advent-of-code/pkg/std"
 )
 
 func solve(input []string) int {
 	dial := 50
 	count := 0
+
+	Int := func(s string) int {
+		i, _ := strconv.Atoi(s)
+		return i
+	}
 
 	for _, line := range input {
 		for range Int(line[1:]) {
