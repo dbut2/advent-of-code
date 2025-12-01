@@ -1,7 +1,7 @@
 # aoc
 ### Advent of Code
 
-Advent of Code solutions for some of 2020-2024, mostly in Go
+Advent of Code solutions for some of 2020-2025, mostly in Go
 
 All Go solutions should be runnable through `go run`ning the **file**.
 For each solution you can either provide your input inside each days solution in `input.txt`, or set your `AOC_SESSION` env var and the input will be fetched for you.
