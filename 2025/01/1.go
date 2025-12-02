@@ -7,26 +7,14 @@ import (
 )
 
 func solve(input []string) int {
-	dial := 50
-	count := 0
-
-	Int := func(s string) int {
-		i, _ := strconv.Atoi(s)
-		return i
-	}
-
+	dial, count := 50, 0
 	for _, line := range input {
-		switch line[0] {
-		case 'L':
-			dial -= Int(line[1:])
-		case 'R':
-			dial += Int(line[1:])
-		}
+		amt, _ := strconv.Atoi(line[1:])
+		dial += amt * (int(line[0]) - 79) / 3 // magic L=-1 R=1
 		if dial%100 == 0 {
 			count++
 		}
 	}
-
 	return count
 }
 
