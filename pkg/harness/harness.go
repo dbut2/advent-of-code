@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"slices"
 	strings2 "strings"
+	"time"
 
 	"github.com/dbut2/advent-of-code/pkg/benchmark"
 	"github.com/dbut2/advent-of-code/pkg/lists"
@@ -376,9 +377,21 @@ func (h *Harness[T, U]) Expect(n int, expected U) {
 }
 
 // Benchmark is a utility to run a benchmark on solve using the main input.
-func (h *Harness[T, U]) Benchmark(cond benchmark.Condition) {
+func (h *Harness[T, U]) Benchmark(cond any) {
+	var c benchmark.Condition
+	switch v := cond.(type) {
+	case benchmark.Condition:
+		c = v
+	case int:
+		c = benchmark.Count(v)
+	case time.Duration:
+		c = benchmark.Time(v)
+	default:
+		panic("unknown condition")
+	}
+
 	input := h.preProcessor(h.getInput())
 	benchmark.Run(func() {
 		h.solve(input)
-	}, cond)
+	}, c)
 }
