@@ -32,4 +32,5 @@ The packages found in this repo are free to use or reference. It's recommend to 
 | Day | Part 1 | Part 2 |
 | :---: | :---: | :---: |
 | [Day 1](https://adventofcode.com/2025/day/1) | ⭐ | ⭐ |
+| [Day 2](https://adventofcode.com/2025/day/2) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
