@@ -32,20 +32,20 @@ func solve(input string) int {
 			}
 
 			for _, d := range divisors[x] {
-				check := ((ranges[0][0] + d - 1) / d) * d
-				for check <= ranges[0][1] {
-					total += check
-					check += d
+				first := (ranges[0][0] + d - 1) / d // the first whole division in range
+				n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+				if n > 0 {
+					total += first*n*d + n*(n-1)/2*d
 				}
 			}
 
 			if ranges[1][1] != 0 {
 				z := log10(ranges[1][1])
 				for _, d := range divisors[z] {
-					check := ((ranges[1][0] + d - 1) / d) * d
-					for check <= ranges[1][1] {
-						total += check
-						check += d
+					first := (ranges[1][0] + d - 1) / d // the first whole division in range
+					n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+					if n > 0 {
+						total += first*n*d + n*(n-1)/2*d
 					}
 				}
 			}
@@ -71,20 +71,20 @@ func solve(input string) int {
 	}
 
 	for _, d := range divisors[x] {
-		check := ((ranges[0][0] + d - 1) / d) * d
-		for check <= ranges[0][1] {
-			total += check
-			check += d
+		first := (ranges[0][0] + d - 1) / d // the first whole division in range
+		n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+		if n > 0 {
+			total += first*n*d + n*(n-1)/2*d
 		}
 	}
 
 	if ranges[1][1] != 0 {
 		z := log10(ranges[1][1])
 		for _, d := range divisors[z] {
-			check := ((ranges[1][0] + d - 1) / d) * d
-			for check <= ranges[1][1] {
-				total += check
-				check += d
+			first := (ranges[1][0] + d - 1) / d // the first whole division in range
+			n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+			if n > 0 {
+				total += first*n*d + n*(n-1)/2*d
 			}
 		}
 	}

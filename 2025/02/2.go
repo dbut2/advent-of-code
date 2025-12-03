@@ -19,69 +19,66 @@ func solve(input string) int {
 		}
 		if c == ',' {
 			x, y := log10(a), log10(b)
-			if x == y {
-				ranges[0][0] = a
-				ranges[0][1] = b
-				ranges[1][0] = 0
-				ranges[1][1] = 0
-			} else {
-				ranges[0][0] = a
+			ranges[0][0] = a
+			ranges[0][1] = b
+			ranges[1][1] = 0
+			if x != y {
 				ranges[0][1] = pow10[x] - 1
 				ranges[1][0] = pow10[x]
 				ranges[1][1] = b
 			}
 
 			for _, d := range divisors[x] {
-				check := ((ranges[0][0] + d - 1) / d) * d
-				for check <= ranges[0][1] {
-					total += check
-					check += d
+				first := (ranges[0][0] + d - 1) / d // the first whole division in range
+				n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+				if n > 0 {
+					total += (first*n + n*(n-1)/2) * d
 				}
 			}
 
 			if x == 6 {
-				const d = 111111
-				check := ((ranges[0][0] + d - 1) / d) * d
-				for check <= ranges[0][1] {
-					total -= check
-					check += d
+				d := 111111
+				first := (ranges[0][0] + d - 1) / d // the first whole division in range
+				n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+				if n > 0 {
+					total -= (first*n + n*(n-1)/2) * d
 				}
 			}
 
 			if x == 10 {
-				const d = 1111111111
-				check := ((ranges[0][0] + d - 1) / d) * d
-				for check <= ranges[0][1] {
-					total -= check
-					check += d
+				d := 1111111111
+				first := (ranges[0][0] + d - 1) / d // the first whole division in range
+				n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+				if n > 0 {
+					total -= (first*n + n*(n-1)/2) * d
 				}
 			}
 
 			if ranges[1][1] != 0 {
 				z := log10(ranges[1][1])
 				for _, d := range divisors[z] {
-					check := ((ranges[1][0] + d - 1) / d) * d
-					for check <= ranges[1][1] {
-						total += check
-						check += d
+					first := (ranges[1][0] + d - 1) / d // the first whole division in range
+					n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+					if n > 0 {
+						total += (first*n + n*(n-1)/2) * d
 					}
 				}
 
 				if z == 6 {
-					const d = 111111
-					check := ((ranges[1][0] + d - 1) / d) * d
-					for check <= ranges[1][1] {
-						total -= check
-						check += d
+					d := 111111
+					first := (ranges[1][0] + d - 1) / d // the first whole division in range
+					n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+					if n > 0 {
+						total -= (first*n + n*(n-1)/2) * d
 					}
 				}
 
 				if z == 10 {
-					const d = 1111111111
-					check := ((ranges[1][0] + d - 1) / d) * d
-					for check <= ranges[1][1] {
-						total -= check
-						check += d
+					d := 1111111111
+					first := (ranges[1][0] + d - 1) / d // the first whole division in range
+					n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+					if n > 0 {
+						total -= (first*n + n*(n-1)/2) * d
 					}
 				}
 			}
@@ -94,69 +91,66 @@ func solve(input string) int {
 	}
 
 	x, y := log10(a), log10(b)
-	if x == y {
-		ranges[0][0] = a
-		ranges[0][1] = b
-		ranges[1][0] = 0
-		ranges[1][1] = 0
-	} else {
-		ranges[0][0] = a
+	ranges[0][0] = a
+	ranges[0][1] = b
+	ranges[1][1] = 0
+	if x != y {
 		ranges[0][1] = pow10[x] - 1
 		ranges[1][0] = pow10[x]
 		ranges[1][1] = b
 	}
 
 	for _, d := range divisors[x] {
-		check := ((ranges[0][0] + d - 1) / d) * d
-		for check <= ranges[0][1] {
-			total += check
-			check += d
+		first := (ranges[0][0] + d - 1) / d // the first whole division in range
+		n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+		if n > 0 {
+			total += (first*n + n*(n-1)/2) * d
 		}
 	}
 
 	if x == 6 {
-		const d = 111111
-		check := ((ranges[0][0] + d - 1) / d) * d
-		for check <= ranges[0][1] {
-			total -= check
-			check += d
+		d := 111111
+		first := (ranges[0][0] + d - 1) / d // the first whole division in range
+		n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+		if n > 0 {
+			total -= (first*n + n*(n-1)/2) * d
 		}
 	}
 
 	if x == 10 {
-		const d = 1111111111
-		check := ((ranges[0][0] + d - 1) / d) * d
-		for check <= ranges[0][1] {
-			total -= check
-			check += d
+		d := 1111111111
+		first := (ranges[0][0] + d - 1) / d // the first whole division in range
+		n := ranges[0][1]/d - first + 1     // the count of whole divisions in the range
+		if n > 0 {
+			total -= (first*n + n*(n-1)/2) * d
 		}
 	}
 
 	if ranges[1][1] != 0 {
 		z := log10(ranges[1][1])
 		for _, d := range divisors[z] {
-			check := ((ranges[1][0] + d - 1) / d) * d
-			for check <= ranges[1][1] {
-				total += check
-				check += d
+			first := (ranges[1][0] + d - 1) / d // the first whole division in range
+			n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+			if n > 0 {
+				total += (first*n + n*(n-1)/2) * d
 			}
 		}
 
 		if z == 6 {
-			const d = 111111
-			check := ((ranges[1][0] + d - 1) / d) * d
-			for check <= ranges[1][1] {
-				total -= check
-				check += d
+			d := 111111
+			first := (ranges[1][0] + d - 1) / d // the first whole division in range
+			n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+			if n > 0 {
+				total -= (first*n + n*(n-1)/2) * d
 			}
 		}
 
 		if z == 10 {
-			const d = 1111111111
-			check := ((ranges[1][0] + d - 1) / d) * d
-			for check <= ranges[1][1] {
-				total -= check
-				check += d
+			d := 1111111111
+			first := (ranges[1][0] + d - 1) / d // the first whole division in range
+			n := ranges[1][1]/d - first + 1     // the count of whole divisions in the range
+			if n > 0 {
+				total -= (first*n + n*(n-1)/2) * d
 			}
 		}
 	}
