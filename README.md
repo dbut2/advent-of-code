@@ -37,4 +37,5 @@ The packages found in this repo are free to use or reference. It's recommend to 
 | [Day 4](https://adventofcode.com/2025/day/4) | ⭐ | ⭐ |
 | [Day 5](https://adventofcode.com/2025/day/5) | ⭐ | ⭐ |
 | [Day 6](https://adventofcode.com/2025/day/6) | ⭐ | ⭐ |
+| [Day 7](https://adventofcode.com/2025/day/7) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
