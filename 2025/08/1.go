@@ -1,87 +1,80 @@
 package main
 
 import (
-	"math"
 	"slices"
 
 	"github.com/dbut2/advent-of-code/pkg/harness"
-	"github.com/dbut2/advent-of-code/pkg/lists"
-	"github.com/dbut2/advent-of-code/pkg/sets"
-	. "github.com/dbut2/advent-of-code/pkg/std"
-	"github.com/dbut2/advent-of-code/pkg/strings"
 )
 
-func solve(input []string) int {
-	// Process input as list of positions
-	var poss []pos
-	for _, line := range input {
-		poss = append(poss, pos(strings.Ints(line)))
+func solve(input [][]int) int {
+	type Pos [3]int
+
+	// Calculate squared Euclidean distance
+	// https://en.wikipedia.org/wiki/Euclidean_distance
+	distance := func(a, b Pos) int {
+		dx := a[0] - b[0]
+		dy := a[1] - b[1]
+		dz := a[2] - b[2]
+		return dx*dx + dy*dy + dz*dz
 	}
 
-	// Find all pairs of points and order a list on their distance
-	pairs := [][2]pos{}
-	distances := map[[2]pos]float64{}
-	for i := 0; i < len(poss); i++ {
+	// Convert input to positions
+	var positions []Pos
+	for _, line := range input {
+		positions = append(positions, Pos(line))
+	}
+
+	// Generate all pairs of positions and sort by distance
+	var pairs [][2]Pos
+	for i := 1; i < len(positions); i++ {
 		for j := 0; j < i; j++ {
-			pair := [2]pos{poss[i], poss[j]}
-			distances[pair] = distance(poss[i], poss[j])
-			pairs = append(pairs, pair)
+			pairs = append(pairs, [2]Pos{positions[i], positions[j]})
 		}
 	}
-	slices.SortFunc(pairs, func(a, b [2]pos) int {
-		return int(distance(a[0], a[1]) - distance(b[0], b[1]))
+	slices.SortFunc(pairs, func(a, b [2]Pos) int {
+		return distance(a[0], a[1]) - distance(b[0], b[1])
 	})
 
-	// Continually connect the closest points 1000 times
-	connections := make(map[pos][]pos)
+	// Initialize union-find structure
+	// graphs holds the nodes in each connected component
+	// graphIndex maps each position to its graph index
+	graphs := make([][]Pos, len(positions))
+	graphIndex := map[Pos]int{}
+	for i, pos := range positions {
+		graphs[i] = []Pos{pos}
+		graphIndex[pos] = i
+	}
+
+	// Connect 1000 closest points
 	for i := range 1000 {
 		pair := pairs[i]
-		connections[pair[0]] = append(connections[pair[0]], pair[1])
-		connections[pair[1]] = append(connections[pair[1]], pair[0])
-	}
+		indexA, indexB := graphIndex[pair[0]], graphIndex[pair[1]]
 
-	// Calculate group sizes, return product of largest 3
-	g := groups(poss, connections)
-	slices.Sort(g)
-	slices.Reverse(g)
-	return Product(g[:3]...)
-}
-
-type pos [3]int
-
-// cartesian distance of 2 3D points
-func distance(a, b pos) float64 {
-	return math.Sqrt(math.Pow(float64(a[0]-b[0]), 2) + math.Pow(float64(a[1]-b[1]), 2) + math.Pow(float64(a[2]-b[2]), 2))
-}
-
-// groups returns the group sizes for a disconnected graph of 3D points
-func groups(poss []pos, connections map[pos][]pos) []int {
-	posSet := sets.SetFrom(poss)
-	var groupSizes []int
-	seen := sets.Set[pos]{}
-
-	// While we still have unprocessed positions, create a new groupSizes with
-	// all connected points from some selected point
-	for len(posSet) > 0 {
-		groupSize := 0
-		q := lists.NewQueue[pos]()
-		q.Push(posSet.Slice()[0])
-		// Queue and process all connected nodes starting from posSet[0]
-		for pos := range q.Seq {
-			if seen.Contains(pos) {
-				continue
-			}
-			seen.Add(pos)
-
-			groupSize++
-			posSet.Remove(pos)
-			for _, next := range connections[pos] {
-				q.Push(next)
-			}
+		if indexA == indexB {
+			continue
 		}
-		groupSizes = append(groupSizes, groupSize)
+
+		// Merge graph B into graph A
+		for _, node := range graphs[indexB] {
+			graphIndex[node] = indexA
+		}
+		graphs[indexA] = append(graphs[indexA], graphs[indexB]...)
+		graphs[indexB] = []Pos{}
 	}
-	return groupSizes
+
+	// Find the three largest tree sizes
+	a, b, c := 0, 0, 0
+	for _, graph := range graphs {
+		size := len(graph)
+		if size > a {
+			a, b, c = size, a, b
+		} else if size > b {
+			b, c = size, b
+		} else if size > c {
+			c = size
+		}
+	}
+	return a * b * c
 }
 
 func main() {
