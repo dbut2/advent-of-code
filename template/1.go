@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/dbut2/advent-of-code/pkg/harness"
 	. "github.com/dbut2/advent-of-code/pkg/std"
 )
@@ -19,4 +21,7 @@ func main() {
 }
 
 // hack: resolve unused import for quicker first run
-var _ = Sum[int]
+func init() {
+	_ = Sum[int]
+	_ = fmt.Println
+}
