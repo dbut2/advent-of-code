@@ -17,6 +17,8 @@ func solve(input []string) int {
 		targetStr = targetStr[1 : len(targetStr)-1]
 		buttonsStrs := parts[1 : len(parts)-1]
 
+		// Create bitmask for each button for what lights they toggle
+		// XORing the state with a button mask will flip respective lights
 		var buttons []int
 		for _, buttonStr := range buttonsStrs {
 			button := 0
@@ -26,6 +28,7 @@ func solve(input []string) int {
 			buttons = append(buttons, button)
 		}
 
+		// Create target bitwise state
 		target := 0
 		for i, c := range targetStr {
 			if c == '#' {
@@ -35,8 +38,11 @@ func solve(input []string) int {
 
 		m := math.MaxInt
 		for i := range 1 << len(buttons) {
+			// Range all unique sets of buttons presses
+			// Represented as bitwise where bit N set means toggle button N
 			state := 0
 			for j, mask := range buttons {
+				// Apply button j if respective bit set in sequence
 				if i>>j&1 == 1 {
 					state ^= mask
 				}
