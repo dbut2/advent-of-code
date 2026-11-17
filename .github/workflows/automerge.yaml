@@ -1,0 +1,59 @@
+# DO NOT EDIT. Synced from dbut2/x
+# https://github.com/dbut2/x/blob/main/workflow-sync/workflows/automerge.yaml
+
+name: Automerge
+
+on:
+  pull_request:
+  pull_request_target:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+    if: |
+      (github.event_name == 'pull_request' && (github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' || github.actor == 'github-actions[bot]')) ||
+      (github.event_name == 'pull_request_target' && (github.actor == 'dbut2' || github.actor == 'dylan-botler[bot]') && github.event.label.name == 'automerge') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && github.actor == 'dbut2' && contains(github.event.comment.body, '/automerge'))
+    steps:
+      - name: Generate token
+        id: token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_CLIENT_ID }}
+          private-key: ${{ secrets.GH_PRIVATE_KEY }}
+
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+        run: |
+          SHA=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.head.sha')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Required Checks
+        uses: RoryQ/required-checks@v1.3.1
+        with:
+          required_workflow_patterns: |
+            - Go Quality
+          token: ${{ steps.token.outputs.token }}
+          target_sha: ${{ steps.pr-sha.outputs.sha }}
+          initial_delay_seconds: 0
+          poll_frequency_seconds: 10
+          missing_required_retry_count: 10
+
+      - name: Enable auto-merge
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 5
+          max_attempts: 12
+          retry_wait_seconds: 10
+          command: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+          GH_TOKEN: ${{ steps.token.outputs.token }}
