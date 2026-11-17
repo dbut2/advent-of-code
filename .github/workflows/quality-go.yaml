@@ -1,0 +1,44 @@
+# DO NOT EDIT. Synced from dbut2/x
+# https://github.com/dbut2/x/blob/main/workflow-sync/workflows/quality-go.yaml
+
+name: Go Quality
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go Quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go mod download
+      - name: Build
+        run: go build ./...
+      - name: Test
+        run: go test -v ./...
+      - name: Generate
+        run: |
+          go generate ./...
+          git diff --exit-code
+      - name: Tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+      - name: Lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          working-directory: .
